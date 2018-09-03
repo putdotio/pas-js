@@ -21,5 +21,9 @@
   "homepage": "https://github.com/putdotio/pas-js#readme",
   "devDependencies": {
     "parcel-bundler": "^1.9.7"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
+
