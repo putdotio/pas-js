@@ -1,0 +1,25 @@
+{
+  "name": "@putdotio/pas-js",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "parcel src/index.html --global Pas --no-cache",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "build": "parcel build src/index.js --global acceptNano Pas no-cache --out-file index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/putdotio/pas-js.git"
+  },
+  "author": "Put.io <devs@put.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/putdotio/pas-js/issues"
+  },
+  "homepage": "https://github.com/putdotio/pas-js#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.9.7"
+  }
+}
