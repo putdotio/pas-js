@@ -1,16 +1,23 @@
 import Cookies from 'js-cookie'
 import uuidv4 from 'uuid/v4'
 import Api from './api'
-import config from './config'
 
 class PutioAnalyticsClient {
+  static GetDomain() {
+    const hostname = window.location.hostname.split('.')
+    return hostname.length >= 2 ?
+      `.${hostname[hostname.length - 2]}.${hostname[hostname.length - 1]}` :
+      window.location.hostname
+  }
+
   constructor() {
-    this.setupUser(JSON.parse(Cookies.get(config.USER_COOKIE_NAME) || '{}'))
+    this.options = PutioAnalyticsClient.DEFAULT_OPTIONS
+    this.setupUser(Cookies.getJSON(this.options.cookies.name))
     this.isSetup = false
   }
 
   setup(options = {}) {
-    this.options = Object.assign({}, PutioAnalyticsClient.DEFAULT_OPTIONS, options)
+    this.options = Object.assign({}, this.options, options)
     this.api = new Api({ url: this.options.apiURL })
     this.isSetup = true
   }
@@ -18,7 +25,7 @@ class PutioAnalyticsClient {
   setupUser(user = {}) {
     user.id = user.id || uuidv4()
     user.hash = user.hash || ''
-    Cookies.set(config.USER_COOKIE_NAME, user, config.USER_COOKIE_CONFIG)
+    Cookies.set(this.options.cookies.name, user, { expires: this.options.cookies.expires, domain: PutioAnalyticsClient.GetDomain() })
     this.user = user
   }
 
@@ -39,10 +46,8 @@ class PutioAnalyticsClient {
 
   alias({ id, hash }) {
     this.checkSetup()
-
     const previousId = this.user.id
     this.log('ALIAS', { previousId, id, hash })
-
     this.user = { id, hash }
     this.api.alias(previousId, id, this.user)
   }
@@ -50,11 +55,13 @@ class PutioAnalyticsClient {
   identify({ id, hash, properties }) {
     this.checkSetup()
     this.log('IDENTIFY', { id, hash, properties })
-
-    Cookies.set(config.USER_COOKIE_NAME, { id, hash }, config.USER_COOKIE_CONFIG)
-
+    Cookies.set(this.options.cookies.name, { id, hash }, { expires: this.options.cookies.expires, domain: PutioAnalyticsClient.GetDomain() })
     this.user = { id, hash, properties }
     this.api.identify(this.user)
+  }
+
+  clear() {
+    Cookies.remove(this.options.cookies.name, { domain: PutioAnalyticsClient.GetDomain() })
   }
 
   reset() {
@@ -74,6 +81,10 @@ class PutioAnalyticsClient {
 PutioAnalyticsClient.DEFAULT_OPTIONS = {
   debug: false,
   apiURL: null,
+  cookies: {
+    name: 'pas_js_user',
+    expires: 365,
+  },
 }
 
 module.exports = new PutioAnalyticsClient()
