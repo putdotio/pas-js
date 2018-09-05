@@ -7,7 +7,7 @@
     "start": "parcel src/index.html --global Pas --no-cache",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
-    "build": "parcel build src/index.js --global acceptNano Pas no-cache --out-file index.js"
+    "build": "parcel build src/index.js --global Pas no-cache --out-file index.js"
   },
   "repository": {
     "type": "git",
