@@ -1,45 +1,79 @@
 import Cookies from 'js-cookie'
 import uuidv4 from 'uuid/v4'
-import { fromJS } from 'immutable'
 import Api from './api'
 import config from './config'
 
 class PutioAnalyticsClient {
   constructor() {
-    this.api = new Api({ url: '' })
-    this.setupUser(Cookies.get(config.USER_COOKIE_NAME))
+    this.setupUser(JSON.parse(Cookies.get(config.USER_COOKIE_NAME) || '{}'))
+    this.isSetup = false
   }
 
-  setupUser(userId = null) {
-    userId = userId || uuidv4()
-
-    Cookies.set(config.USER_COOKIE_NAME, userId, config.USER_COOKIE_CONFIG)
-
-    this.user = fromJS({
-      id: userId,
-    })
+  setup(options = {}) {
+    this.options = Object.assign({}, PutioAnalyticsClient.DEFAULT_OPTIONS, options)
+    this.api = new Api({ url: this.options.apiURL })
+    this.isSetup = true
   }
 
-  sendEvent(name, payload) {
-    console.log(name, payload)
-    this.api.sendEvent()
+  setupUser(user = {}) {
+    user.id = user.id || uuidv4()
+    user.hash = user.hash || ''
+    Cookies.set(config.USER_COOKIE_NAME, user, config.USER_COOKIE_CONFIG)
+    this.user = user
   }
 
-  alias(userId) {
-    const currentId = this.user.get('id')
-    this.user = this.user.set('id', userId)
-    this.api.alias(currentId, userId)
+  checkSetup() {
+    if (!this.isSetup) {
+      throw new Error(`
+        You need to setup pas.js properly in order to use it.
+        Please refer to our documentation: https://github.com/putdotio/pas-js
+      `)
+    }
   }
 
-  identify(user) {
-    Cookies.set(config.USER_COOKIE_NAME, user.id, config.USER_COOKIE_CONFIG)
-    this.user = this.user.merge(user)
-    this.api.identify(this.user.toJS())
+  sendEvent(name, properties = {}) {
+    this.checkSetup()
+    this.log('SEND EVENT', { name, properties })
+    this.api.sendEvent({ name, properties }, this.user)
+  }
+
+  alias({ id, hash }) {
+    this.checkSetup()
+
+    const previousId = this.user.id
+    this.log('ALIAS', { previousId, id, hash })
+
+    this.user = { id, hash }
+    this.api.alias(previousId, id, this.user)
+  }
+
+  identify({ id, hash, properties }) {
+    this.checkSetup()
+    this.log('IDENTIFY', { id, hash, properties })
+
+    Cookies.set(config.USER_COOKIE_NAME, { id, hash }, config.USER_COOKIE_CONFIG)
+
+    this.user = { id, hash, properties }
+    this.api.identify(this.user)
   }
 
   reset() {
+    this.checkSetup()
     this.setupUser()
   }
+
+  log(message, payload = {}) {
+    if (!this.options.debug) {
+      return
+    }
+
+    console.log(`PAS.JS -> ${message}`, payload)
+  }
+}
+
+PutioAnalyticsClient.DEFAULT_OPTIONS = {
+  debug: false,
+  apiURL: null,
 }
 
 module.exports = new PutioAnalyticsClient()

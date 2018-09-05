@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "immutable": "^3.8.2",
     "js-cookie": "^2.2.0",
     "uuid": "^3.3.2"
   }
