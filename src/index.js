@@ -24,7 +24,7 @@ class PutioAnalyticsClient {
 
   setupUser(user = {}) {
     user.id = user.id || uuidv4()
-    user.hash = user.hash || ''
+    user.hash = user.hash || null
     Cookies.set(this.options.cookies.name, user, { expires: this.options.cookies.expires, domain: PutioAnalyticsClient.GetDomain() })
     this.user = user
   }
