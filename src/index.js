@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie'
 import uuidv4 from 'uuid/v4'
+import pkg from '../package.json'
 import Api from './api'
 
 class PutioAnalyticsClient {
@@ -8,6 +9,10 @@ class PutioAnalyticsClient {
     return hostname.length >= 2 ?
       `.${hostname[hostname.length - 2]}.${hostname[hostname.length - 1]}` :
       window.location.hostname
+  }
+
+  get version() {
+    return pkg.version
   }
 
   constructor() {
