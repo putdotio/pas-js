@@ -46,7 +46,7 @@ class PutioAnalyticsClient {
   sendEvent(name, properties = {}) {
     this.checkSetup()
     this.log('SEND EVENT', { name, properties })
-    this.api.sendEvent({ name, properties }, this.user)
+    return this.api.sendEvent({ name, properties }, this.user)
   }
 
   alias({ id, hash }) {
@@ -54,7 +54,7 @@ class PutioAnalyticsClient {
     const previousId = this.user.id
     this.log('ALIAS', { previousId, id, hash })
     this.user = { id, hash }
-    this.api.alias(previousId, this.user)
+    return this.api.alias(previousId, this.user)
   }
 
   identify({ id, hash, properties }) {
@@ -62,7 +62,7 @@ class PutioAnalyticsClient {
     this.log('IDENTIFY', { id, hash, properties })
     Cookies.set(this.options.cookies.name, { id, hash }, { expires: this.options.cookies.expires, domain: PutioAnalyticsClient.GetDomain() })
     this.user = { id, hash, properties }
-    this.api.identify(this.user)
+    return this.api.identify(this.user)
   }
 
   clear() {
