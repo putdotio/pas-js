@@ -54,7 +54,7 @@ class PutioAnalyticsClient {
     const previousId = this.user.id
     this.log('ALIAS', { previousId, id, hash })
     this.user = { id, hash }
-    this.api.alias(previousId, id, this.user)
+    this.api.alias(previousId, this.user)
   }
 
   identify({ id, hash, properties }) {
