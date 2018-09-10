@@ -1,7 +1,8 @@
 import Cookies from 'js-cookie'
 import uuidv4 from 'uuid/v4'
-import pkg from '../package.json'
+import merge from 'deep-assign'
 import Api from './api'
+import pkg from '../package.json'
 
 class PutioAnalyticsClient {
   static GetDomain() {
@@ -22,7 +23,7 @@ class PutioAnalyticsClient {
   }
 
   setup(options = {}) {
-    this.options = Object.assign({}, this.options, options)
+    this.options = merge(this.options, options)
     this.api = new Api({ url: this.options.apiURL })
     this.isSetup = true
   }
@@ -85,7 +86,7 @@ class PutioAnalyticsClient {
 
 PutioAnalyticsClient.DEFAULT_OPTIONS = {
   debug: false,
-  apiURL: null,
+  apiURL: '',
   cookies: {
     name: 'pas_js_user',
     expires: 365,
