@@ -1,8 +1,8 @@
 # pas-js
 
-Client-side JavaScript library for Put.io Analytics System
-
 [![Build Status](https://travis-ci.org/putdotio/pas-js.svg?branch=master)](https://travis-ci.org/putdotio/pas-js)
+
+Client-side JavaScript library for Put.io Analytics System
 
 ## Installing
 *pas-js* is pushed to npm on each tagged build, so you can easily include it by inserting a script tag into your <HEAD> part of the HTML page, like this:
