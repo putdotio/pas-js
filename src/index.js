@@ -1,6 +1,6 @@
+import '@babel/polyfill'
 import Cookies from 'js-cookie'
 import uuidv4 from 'uuid/v4'
-import merge from 'deep-assign'
 import Api from './api'
 import pkg from '../package.json'
 
@@ -23,7 +23,7 @@ class PutioAnalyticsClient {
   }
 
   setup(options = {}) {
-    this.options = merge(this.options, options)
+    this.options = Object.assign({}, this.options, options)
     this.api = new Api({ url: this.options.apiURL })
     this.isSetup = true
   }
