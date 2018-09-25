@@ -18,6 +18,7 @@ class PutioAnalyticsClient {
 
   constructor() {
     this.options = PutioAnalyticsClient.DEFAULT_OPTIONS
+    this.failedEventQueue = Cookies.getJSON(this.options.cookies.event_queue) || {}
     this.setupUser(Cookies.getJSON(this.options.cookies.name))
     this.isSetup = false
   }
@@ -26,6 +27,7 @@ class PutioAnalyticsClient {
     this.options = merge(this.options, options)
     this.api = new Api({ url: this.options.apiURL })
     this.isSetup = true
+    this.retryFailedEvents()
   }
 
   setupUser(user = {}) {
@@ -44,10 +46,55 @@ class PutioAnalyticsClient {
     }
   }
 
+  retryFailedEvents() {
+    const eventIds = Object.keys(this.failedEventQueue)
+
+    if (!eventIds.length) {
+      return
+    }
+
+    eventIds.map((eventId) => {
+      this.removeRetriedEventFromQueue(eventId)
+      this.sendEvent(this.failedEventQueue[eventId])
+    })
+  }
+
+  addFailedEventToQueue(event) {
+    const eventId = uuidv4()
+    this.log('ADD FAILED EVENT TO QUEUE', eventId, event)
+    this.failedEventQueue[eventId] = event
+    this.writeEventQueueToCookies()
+  }
+
+  removeRetriedEventFromQueue(eventId) {
+    delete this.failedEventQueue[eventId]
+    this.writeEventQueueToCookies()
+  }
+
+  writeEventQueueToCookies() {
+    Cookies.set(this.options.cookies.event_queue, this.failedEventQueue, { expires: this.options.cookies.expires, domain: PutioAnalyticsClient.GetDomain() })
+  }
+
   sendEvent(name, properties = {}) {
     this.checkSetup()
-    this.log('SEND EVENT', { name, properties })
-    return this.api.sendEvent({ name, properties }, this.user)
+    const event = { name, properties }
+    this.log('SEND EVENT', event)
+    return new Promise((resolve, reject) => {
+      this.api.sendEvent(event, this.user)
+        .then(resolve)
+        .catch((error) => {
+          if (
+            error &&
+            error.message &&
+            (error.message.includes('timeout') || error.message.includes('Network Error'))
+          ) {
+            this.addFailedEventToQueue(event)
+            error.PAS_JS_WILL_RETRY = true
+          }
+
+          reject(error)
+        })
+    })
   }
 
   alias({ id, hash }) {
@@ -89,6 +136,7 @@ PutioAnalyticsClient.DEFAULT_OPTIONS = {
   apiURL: '',
   cookies: {
     name: 'pas_js_user',
+    event_queue: 'pas_js_event_queue',
     expires: 365,
   },
 }
