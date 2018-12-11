@@ -2,12 +2,14 @@
   "name": "@putdotio/pas-js",
   "version": "0.4.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.js",
   "scripts": {
-    "start": "parcel src/index.html --global Pas --no-cache",
+    "start": "rollup -c -w",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
-    "build": "parcel build src/index.js --global Pas no-cache --out-file index.js"
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",
@@ -20,16 +22,18 @@
   },
   "homepage": "https://github.com/putdotio/pas-js#readme",
   "devDependencies": {
-    "babel-preset-stage-0": "^6.24.1",
-    "parcel-bundler": "^1.9.7"
-  },
-  "publishConfig": {
-    "access": "public"
+    "rollup": "^0.67.4",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-resolve": "^4.0.0"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "deep-assign": "^2.0.0",
     "js-cookie": "^2.2.0",
     "uuid": "^3.3.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

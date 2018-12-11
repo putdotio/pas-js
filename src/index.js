@@ -141,5 +141,4 @@ PutioAnalyticsClient.DEFAULT_OPTIONS = {
   },
 }
 
-module.exports = new PutioAnalyticsClient()
-
+export default new PutioAnalyticsClient()
