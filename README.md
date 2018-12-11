@@ -11,7 +11,7 @@ Client-side JavaScript library for Put.io Analytics System
 <html>
     <head>
         ...
-        <script src="https://unpkg.com/@putdotio/pas-js"></script>
+        <script src="https://unpkg.com/@putdotio/pas-js/dist/umd.js"></script>
     </head>
     ...
 </html>
@@ -27,4 +27,3 @@ window.Pas.setup({
   apiURL: 'api.myPasServer.com', // URL of Pas server (String, required)
   debug: false, // used for enabling debug mode, (Bool, non-required, false by default)
 })
-
