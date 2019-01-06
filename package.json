@@ -2,9 +2,10 @@
   "name": "@putdotio/pas-js",
   "version": "0.6.1",
   "description": "",
-  "main": "dist/cjs.js",
-  "module": "dist/esm.js",
-  "browser": "dist/umd.js",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "browser": "dist/index.umd.js",
+  "jsnext:main": "dist/index.es.js",
   "scripts": {
     "start": "rollup -c -w",
     "clean": "rm -rf dist",
@@ -22,7 +23,11 @@
   },
   "homepage": "https://github.com/putdotio/pas-js#readme",
   "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.2.3",
+    "@babel/preset-env": "^7.2.3",
     "rollup": "^0.67.4",
+    "rollup-plugin-babel": "^4.2.0",
     "rollup-plugin-commonjs": "^9.2.0",
     "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-node-resolve": "^4.0.0"
