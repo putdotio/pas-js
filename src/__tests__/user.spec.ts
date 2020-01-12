@@ -1,4 +1,4 @@
-import createUser from './user'
+import createUser from '../user'
 
 jest.mock('uuid/v4', () => {
   return jest.fn(() => 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14')
