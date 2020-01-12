@@ -25,9 +25,8 @@ class PutioAnalyticsClient {
     },
   }
 
-  public options: IPutioAnalyticsClientOptions
   public version = pkg.version
-
+  private options: IPutioAnalyticsClientOptions
   private logger: log.Logger
   private cache: IPutioAnalyticsCache
   private user: IPutioAnalyticsUser

@@ -1,7 +1,7 @@
 import uuidv4 from 'uuid/v4'
 import { IPutioAnalyticsCache } from './cache'
 
-interface IPutioAnalyticsUserAttributes {
+export interface IPutioAnalyticsUserAttributes {
   anonymousId: string
   id?: string
   hash?: string
