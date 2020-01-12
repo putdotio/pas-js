@@ -3,7 +3,7 @@ import { IPutioAnalyticsCache } from './cache'
 
 interface IPutioAnalyticsUserAttributes {
   anonymousId: string
-  id?: number
+  id?: string
   hash?: string
   properties: any
 }
@@ -20,9 +20,12 @@ const createAttributes = (
 
 export interface IPutioAnalyticsUser {
   attributes: IPutioAnalyticsUserAttributes
-  alias: (params: { id: string; hash: string }) => IPutioAnalyticsUserAttributes
+  alias: (params: {
+    id: string | number
+    hash: string
+  }) => IPutioAnalyticsUserAttributes
   identify: (params: {
-    id: string
+    id: string | number
     hash: string
     properties: any
   }) => IPutioAnalyticsUserAttributes
@@ -36,17 +39,17 @@ const createUser = (
   let attributes = createAttributes(cache.get(cacheKey))
 
   const alias = ({ id, hash }) => {
-    attributes.id = id
+    attributes.id = String(id)
     attributes.hash = hash
-    cache.set(cacheKey, { id, hash })
+    cache.set(cacheKey, { id: attributes.id, hash: attributes.hash })
     return attributes
   }
 
   const identify = ({ id, hash, properties }) => {
-    attributes.id = id
+    attributes.id = String(id)
     attributes.hash = hash
     attributes.properties = properties
-    cache.set(cacheKey, { id, hash })
+    cache.set(cacheKey, { id: attributes.id, hash: attributes.hash })
     return attributes
   }
 
