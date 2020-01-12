@@ -1,42 +1,54 @@
 {
   "name": "@putdotio/pas-js",
   "version": "1.0.0",
-  "description": "",
+  "description": "Client-side JS client for Putio Analytics System",
+  "keywords": [
+    "putio",
+    "put.io",
+    "Putio Analytics System"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "browser": "dist/index.umd.js",
   "jsnext:main": "dist/index.es.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "start": "rollup -c -w",
-    "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
-    "build": "rollup -c"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/putdotio/pas-js.git"
+    "build": "rollup -c",
+    "test": "jest",
+    "lint": "tslint 'src/**/*.ts'",
+    "prebuild": "rm -rf dist && npm run lint"
   },
   "author": "Put.io <devs@put.io>",
   "license": "MIT",
+  "homepage": "https://github.com/putdotio/pas-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/putdotio/pas-js.git"
+  },
   "bugs": {
     "url": "https://github.com/putdotio/pas-js/issues"
   },
-  "homepage": "https://github.com/putdotio/pas-js#readme",
+  "prettier": "@putdotio/prettier-config",
+  "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/plugin-proposal-class-properties": "^7.2.3",
-    "@babel/preset-env": "^7.2.3",
-    "rollup": "^0.67.4",
-    "rollup-plugin-babel": "^4.2.0",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-resolve": "^4.0.0"
-  },
-  "dependencies": {
-    "axios": "^0.18.0",
-    "deep-assign": "^2.0.0",
-    "js-cookie": "^2.2.0",
-    "uuid": "^3.3.2"
+    "@putdotio/prettier-config": "^1.0.0",
+    "@rollup/plugin-json": "^4.0.1",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "@types/jest": "^24.0.25",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "rollup": "^1.29.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-filesize": "^6.2.1",
+    "rollup-plugin-terser": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "ts-jest": "^24.3.0",
+    "tslib": "^1.10.0",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.1.0",
+    "typescript": "^3.7.4"
   },
   "publishConfig": {
     "access": "public"
