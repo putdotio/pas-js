@@ -30,7 +30,10 @@
     "url": "https://github.com/putdotio/pas-js/issues"
   },
   "prettier": "@putdotio/prettier-config",
-  "dependencies": {},
+  "dependencies": {
+    "deepmerge": "^4.2.2",
+    "loglevel": "^1.6.6"
+  },
   "devDependencies": {
     "@putdotio/prettier-config": "^1.0.0",
     "@rollup/plugin-json": "^4.0.1",
