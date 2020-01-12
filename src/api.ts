@@ -10,7 +10,16 @@ interface IPutioAnalyticsAPIEvent {
   properties: any
 }
 
-const createAPI = (options: IPutioAnalyticsAPIOptions) => {
+export interface IPutioAnalyticsAPI {
+  alias: (attributes: IPutioAnalyticsUserAttributes) => Promise<any>
+  identify: (attributes: IPutioAnalyticsUserAttributes) => Promise<any>
+  track: (
+    attributes: IPutioAnalyticsUserAttributes,
+    event: IPutioAnalyticsAPIEvent,
+  ) => Promise<any>
+}
+
+const createAPI = (options: IPutioAnalyticsAPIOptions): IPutioAnalyticsAPI => {
   const alias = (attributes: IPutioAnalyticsUserAttributes) =>
     http(`${options.baseURL}/api/alias`, {
       previous_id: attributes.anonymousId,

@@ -1,10 +1,12 @@
 import merge from 'deepmerge'
 import log from 'loglevel'
 import pkg from '../package.json'
+import createAPI, { IPutioAnalyticsAPI } from './api'
 import createCache, { IPutioAnalyticsCache } from './cache'
 import createUser, { IPutioAnalyticsUser } from './user'
 
 interface IPutioAnalyticsClientOptions {
+  apiURL: string
   loglevel: log.LogLevelDesc
   cache?: {
     domain: string
@@ -16,6 +18,7 @@ interface IPutioAnalyticsClientOptions {
 
 class PutioAnalyticsClient {
   public static DEFAULT_OPTIONS: IPutioAnalyticsClientOptions = {
+    apiURL: 'https://pas.put.io',
     loglevel: 'WARN',
     cache: {
       domain: '.put.io',
@@ -30,30 +33,42 @@ class PutioAnalyticsClient {
   private logger: log.Logger
   private cache: IPutioAnalyticsCache
   private user: IPutioAnalyticsUser
+  private api: IPutioAnalyticsAPI
 
   constructor(options?: IPutioAnalyticsClientOptions) {
     this.options = merge(options, {})
     this.logger = log.noConflict()
     this.logger.setLevel(this.options.loglevel)
-
     this.cache = createCache({
       expires: this.options.cache.expires,
       domain: this.options.cache.domain,
     })
-
     this.user = createUser(this.cache, this.options.cache.userKey)
+    this.api = createAPI({ baseURL: this.options.apiURL })
   }
 
-  public alias(params: { id: string; hash: string }) {
+  public async alias(params: { id: string; hash: string }) {
     this.logger.debug(`alias`, { params })
+
     const attributes = this.user.alias(params)
-    // this.api.alias(attributes)
+
+    try {
+      await this.api.alias(attributes)
+    } catch (error) {
+      this.handleAPIError(error)
+    }
   }
 
-  public identify(params: { id: string; hash: string; properties: any }) {
+  public async identify(params: { id: string; hash: string; properties: any }) {
     this.logger.debug(`identify`, { params })
+
     const attributes = this.user.identify(params)
-    // this.api.identify(this.user)
+
+    try {
+      await this.api.identify(attributes)
+    } catch (error) {
+      this.handleAPIError(error)
+    }
   }
 
   public track() {
@@ -62,6 +77,10 @@ class PutioAnalyticsClient {
 
   public pageView() {
     // this.api.track(this.user)
+  }
+
+  private handleAPIError(error: any) {
+    this.logger.warn(`API Error`, { error })
   }
 }
 
