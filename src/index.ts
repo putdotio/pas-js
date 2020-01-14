@@ -1,7 +1,8 @@
 import merge from 'deepmerge'
 import log from 'loglevel'
+import queryString from 'query-string'
 import pkg from '../package.json'
-import createAPI, { IPutioAnalyticsAPI } from './api'
+import createAPI, { IPutioAnalyticsAPI, IPutioAnalyticsAPIEvent } from './api'
 import createCache, { IPutioAnalyticsCache } from './cache'
 import createUser, { IPutioAnalyticsUser } from './user'
 
@@ -71,12 +72,31 @@ class PutioAnalyticsClient {
     }
   }
 
-  public track() {
-    // this.api.track(this.user)
+  public async track(event: IPutioAnalyticsAPIEvent) {
+    this.logger.debug(`track`)
+
+    try {
+      await this.api.track(this.user.attributes, event)
+    } catch (error) {
+      this.handleAPIError(error)
+    }
   }
 
   public pageView() {
-    // this.api.track(this.user)
+    const { search, origin, pathname } = window.location
+    const { utm_source, utm_medium, utm_campaign } = queryString.parse(search)
+
+    return this.track({
+      name: 'page_viewed',
+      properties: {
+        domain: origin,
+        path: pathname,
+        referrer: document.referrer,
+        utm_source,
+        utm_medium,
+        utm_campaign,
+      },
+    })
   }
 
   private handleAPIError(error: any) {

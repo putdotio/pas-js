@@ -5,7 +5,7 @@ interface IPutioAnalyticsAPIOptions {
   baseURL: string
 }
 
-interface IPutioAnalyticsAPIEvent {
+export interface IPutioAnalyticsAPIEvent {
   name: string
   properties: any
 }
