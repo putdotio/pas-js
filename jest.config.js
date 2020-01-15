@@ -5,4 +5,5 @@ module.exports = {
     '.(ts|tsx)': 'ts-jest',
   },
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],
+  rootDir: 'src',
 }

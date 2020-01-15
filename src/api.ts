@@ -7,7 +7,7 @@ interface IPutioAnalyticsAPIOptions {
 
 export interface IPutioAnalyticsAPIEvent {
   name: string
-  properties: any
+  properties?: any
 }
 
 export interface IPutioAnalyticsAPI {
