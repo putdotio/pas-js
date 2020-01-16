@@ -71,7 +71,9 @@ const createClient = (
   const user = factories.createUser(cache, config.cache.userKey)
   const api = factories.createAPI({ baseURL: config.apiURL })
 
-  const handleAPIError = error => {}
+  const handleAPIError = (error: any) => {
+    logger.warn(`api error`, { error })
+  }
 
   const alias = async (params: { id: any; hash: string }) => {
     logger.debug(`alias`, { params })
