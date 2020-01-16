@@ -40,6 +40,10 @@ describe('Client', () => {
     )
   })
 
+  it('initializes with default params', () => {
+    expect(createClient()).toBeTruthy()
+  })
+
   it('initializes with given params', () => {
     expect(mockCacheGet).toBeCalledWith('pas_js_user')
     expect(mockCacheSet).toBeCalledWith(
@@ -113,6 +117,14 @@ describe('Client', () => {
           },
         },
       )
+    })
+  })
+
+  describe('clear method', () => {
+    it('calls user.clear', () => {
+      client.alias({ id: 7, hash: 'user_hash' })
+      client.clear()
+      expect(mockCacheClear).toBeCalledTimes(1)
     })
   })
 })
