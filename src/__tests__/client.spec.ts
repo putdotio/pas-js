@@ -1,52 +1,57 @@
 import { IPutioAnalyticsAPI } from '../api'
 import { IPutioAnalyticsCache } from '../cache'
-import { IPutioAnalyticsUser } from '../user'
+import createClient, { IPutioAnalyticsClient } from '../client'
+import createUser, { IPutioAnalyticsUser } from '../user'
 
-import Client from '../client'
+const anonymousId = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
+jest.mock('uuid/v4', () => jest.fn(() => anonymousId))
 
-jest.mock('../cache', () => (): IPutioAnalyticsCache => {
+const mockCacheGet = jest.fn()
+const mockCacheSet = jest.fn()
+const mockCacheClear = jest.fn()
+const mockCacheFactory = (): IPutioAnalyticsCache => {
   const cache = {}
-
   return {
-    get: jest.fn(key => cache[key]),
-    set: jest.fn((key, value) => (cache[key] = value)),
-    clear: jest.fn(key => (cache[key] = undefined)),
+    get: mockCacheGet.mockImplementation(key => cache[key]),
+    set: mockCacheSet.mockImplementation((key, value) => (cache[key] = value)),
+    clear: mockCacheClear.mockImplementation(key => delete cache[key]),
   }
-})
+}
 
-jest.mock('../api', () => (): IPutioAnalyticsAPI => ({
-  alias: jest.fn(),
-  identify: jest.fn(),
-  track: jest.fn(),
-}))
+const mockAPIAlias = jest.fn()
+const mockAPIIdentify = jest.fn()
+const mockAPITrack = jest.fn()
+const mockAPIFactory = () => {
+  return {
+    alias: mockAPIAlias,
+    identify: mockAPIIdentify,
+    track: mockAPITrack,
+  }
+}
 
 describe('Client', () => {
+  let client: IPutioAnalyticsClient
+
   afterEach(jest.clearAllMocks)
+  beforeEach(() => {
+    client = createClient(
+      { apiURL: 'example.com' },
+      { createAPI: mockAPIFactory, createCache: mockCacheFactory, createUser },
+    )
+  })
 
   it('initializes with given params', () => {
-    const client = new Client({ apiURL: 'example.com' })
-    // @ts-ignore
-    expect(client.options).toMatchInlineSnapshot(`
-      Object {
-        "apiURL": "example.com",
-        "cache": Object {
-          "domain": ".put.io",
-          "eventQueueKey": "pas_js_event_queue",
-          "expires": 365,
-          "userKey": "pas_js_user",
-        },
-        "loglevel": "WARN",
-      }
-    `)
+    expect(mockCacheGet).toBeCalledWith('pas_js_user')
+    expect(mockCacheSet).toBeCalledWith(
+      'pas_js_user',
+      expect.objectContaining({ anonymousId }),
+    )
   })
 
   describe('alias method', () => {
     it('calls api.alias with correct params', () => {
-      const client = new Client()
       client.alias({ id: 7, hash: 'user_hash' })
-
-      // @ts-ignore
-      expect(client.api.alias).toBeCalledWith(
+      expect(mockAPIAlias).toBeCalledWith(
         expect.objectContaining({ id: '7', hash: 'user_hash' }),
       )
     })
@@ -54,11 +59,9 @@ describe('Client', () => {
 
   describe('identify method', () => {
     it('calls api.identify with correct params', () => {
-      const client = new Client()
       client.identify({ id: 7, hash: 'user_hash', properties: { foo: 'bar' } })
 
-      // @ts-ignore
-      expect(client.api.identify).toBeCalledWith(
+      expect(mockAPIIdentify).toBeCalledWith(
         expect.objectContaining({
           id: '7',
           hash: 'user_hash',
@@ -70,12 +73,10 @@ describe('Client', () => {
 
   describe('track method', () => {
     it('calls api.track with correct params', () => {
-      const client = new Client()
       client.alias({ id: 7, hash: 'user_hash' })
       client.track({ name: 'event_name' })
 
-      // @ts-ignore
-      expect(client.api.track).toBeCalledWith(
+      expect(mockAPITrack).toBeCalledWith(
         expect.objectContaining({ id: '7', hash: 'user_hash' }),
         expect.objectContaining({ name: 'event_name' }),
       )
@@ -84,9 +85,6 @@ describe('Client', () => {
 
   describe('pageView method', () => {
     it('calls track with correct params', () => {
-      const client = new Client()
-      const trackSpy = jest.spyOn(client, 'track')
-
       window = Object.create(window)
       Object.defineProperty(window, 'location', {
         value: {
@@ -101,17 +99,20 @@ describe('Client', () => {
       client.alias({ id: 7, hash: 'user_hash' })
       client.pageView()
 
-      expect(trackSpy).toBeCalledWith({
-        name: 'page_viewed',
-        properties: {
-          domain: 'https://app.put.io',
-          path: '/files',
-          referrer: '',
-          utm_campaign: 'UTM_CAMPAIGN',
-          utm_medium: 'UTM_MEDIUM',
-          utm_source: 'UTM_SOURCE',
+      expect(mockAPITrack).toBeCalledWith(
+        expect.objectContaining({ id: '7', hash: 'user_hash' }),
+        {
+          name: 'page_viewed',
+          properties: {
+            domain: 'https://app.put.io',
+            path: '/files',
+            referrer: '',
+            utm_campaign: 'UTM_CAMPAIGN',
+            utm_medium: 'UTM_MEDIUM',
+            utm_source: 'UTM_SOURCE',
+          },
         },
-      })
+      )
     })
   })
 })

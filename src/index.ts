@@ -1,4 +1,4 @@
-import PutioAnalyticsClient from './client'
+import createClient from './client'
 
 export * from './client'
-export default new PutioAnalyticsClient()
+export default createClient()

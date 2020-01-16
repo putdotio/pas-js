@@ -2,11 +2,18 @@ import merge from 'deepmerge'
 import log from 'loglevel'
 import queryString from 'query-string'
 import pkg from '../package.json'
-import createAPI, { IPutioAnalyticsAPI, IPutioAnalyticsAPIEvent } from './api'
-import createCache, { IPutioAnalyticsCache } from './cache'
+import createAPI, {
+  IPutioAnalyticsAPI,
+  IPutioAnalyticsAPIEvent,
+  IPutioAnalyticsAPIOptions,
+} from './api'
+import createCache, {
+  IPutioAnalyticsCache,
+  IPutioAnalyticsCacheOptions,
+} from './cache'
 import createUser, { IPutioAnalyticsUser } from './user'
 
-interface IPutioAnalyticsClientOptions {
+interface IPutioAnalyticsClientConfig {
   apiURL?: string
   loglevel?: log.LogLevelDesc
   cache?: {
@@ -17,76 +24,98 @@ interface IPutioAnalyticsClientOptions {
   }
 }
 
-class PutioAnalyticsClient {
-  public static DEFAULT_OPTIONS: IPutioAnalyticsClientOptions = {
-    apiURL: 'https://pas.put.io',
-    loglevel: 'WARN',
-    cache: {
-      domain: '.put.io',
-      userKey: 'pas_js_user',
-      eventQueueKey: 'pas_js_event_queue',
-      expires: 365,
+interface IPutioAnalyticsClientFactories {
+  createAPI: (options: IPutioAnalyticsAPIOptions) => IPutioAnalyticsAPI
+  createCache: (options: IPutioAnalyticsCacheOptions) => IPutioAnalyticsCache
+  createUser: (
+    cache: IPutioAnalyticsCache,
+    cacheKey: string,
+  ) => IPutioAnalyticsUser
+}
+
+export interface IPutioAnalyticsClient {
+  version: string
+  alias: (params: { id: any; hash: string }) => Promise<any>
+  identify: (params: { id: any; hash: string; properties: any }) => Promise<any>
+  track: (event: IPutioAnalyticsAPIEvent) => Promise<any>
+  pageView: () => Promise<any>
+  clear: () => void
+}
+
+const createClient = (
+  baseConfig: IPutioAnalyticsClientConfig = {},
+  factories: IPutioAnalyticsClientFactories = {
+    createAPI,
+    createCache,
+    createUser,
+  },
+): IPutioAnalyticsClient => {
+  const config = merge(
+    {
+      apiURL: 'https://pas.put.io',
+      loglevel: 'WARN',
+      cache: {
+        domain: '.put.io',
+        userKey: 'pas_js_user',
+        eventQueueKey: 'pas_js_event_queue',
+        expires: 365,
+      },
     },
-  }
+    baseConfig,
+  )
 
-  public version = pkg.version
-  private options: IPutioAnalyticsClientOptions
-  private logger: log.Logger
-  private cache: IPutioAnalyticsCache
-  private user: IPutioAnalyticsUser
-  private api: IPutioAnalyticsAPI
+  const logger = log.noConflict()
+  logger.setLevel(config.loglevel)
 
-  constructor(options: IPutioAnalyticsClientOptions = {}) {
-    this.options = merge(PutioAnalyticsClient.DEFAULT_OPTIONS, options)
-    this.logger = log.noConflict()
-    this.logger.setLevel(this.options.loglevel)
-    this.cache = createCache({
-      expires: this.options.cache.expires,
-      domain: this.options.cache.domain,
-    })
-    this.user = createUser(this.cache, this.options.cache.userKey)
-    this.api = createAPI({ baseURL: this.options.apiURL })
-  }
+  const cache = factories.createCache(config.cache)
+  const user = factories.createUser(cache, config.cache.userKey)
+  const api = factories.createAPI({ baseURL: config.apiURL })
 
-  public async alias(params: { id: any; hash: string }) {
-    this.logger.debug(`alias`, { params })
+  const handleAPIError = error => {}
 
-    const attributes = this.user.alias(params)
+  const alias = async (params: { id: any; hash: string }) => {
+    logger.debug(`alias`, { params })
+
+    const attributes = user.alias(params)
 
     try {
-      await this.api.alias(attributes)
+      await api.alias(attributes)
     } catch (error) {
-      this.handleAPIError(error)
+      handleAPIError(error)
     }
   }
 
-  public async identify(params: { id: any; hash: string; properties: any }) {
-    this.logger.debug(`identify`, { params })
+  const identify = async (params: {
+    id: any
+    hash: string
+    properties: any
+  }) => {
+    logger.debug(`identify`, { params })
 
-    const attributes = this.user.identify(params)
+    const attributes = user.identify(params)
 
     try {
-      await this.api.identify(attributes)
+      await api.identify(attributes)
     } catch (error) {
-      this.handleAPIError(error)
+      handleAPIError(error)
     }
   }
 
-  public async track(event: IPutioAnalyticsAPIEvent) {
-    this.logger.debug(`track`)
+  const track = async (event: IPutioAnalyticsAPIEvent) => {
+    logger.debug(`track`)
 
     try {
-      await this.api.track(this.user.attributes, event)
+      await api.track(user.attributes, event)
     } catch (error) {
-      this.handleAPIError(error)
+      handleAPIError(error)
     }
   }
 
-  public pageView() {
+  const pageView = () => {
     const { search, origin, pathname } = window.location
     const { utm_source, utm_medium, utm_campaign } = queryString.parse(search)
 
-    return this.track({
+    return track({
       name: 'page_viewed',
       properties: {
         domain: origin,
@@ -99,9 +128,16 @@ class PutioAnalyticsClient {
     })
   }
 
-  private handleAPIError(error: any) {
-    this.logger.warn(`API Error`, { error })
+  const clear = () => user.clear()
+
+  return {
+    version: pkg.version,
+    alias,
+    identify,
+    track,
+    pageView,
+    clear,
   }
 }
 
-export default PutioAnalyticsClient
+export default createClient

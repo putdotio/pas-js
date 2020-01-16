@@ -57,6 +57,7 @@ describe('user utility', () => {
     expect(cache.set).toHaveBeenCalledWith(cacheKey, {
       id: attributes.id,
       hash: attributes.hash,
+      anonymousId: attributes.anonymousId,
     })
   })
 
@@ -83,6 +84,7 @@ describe('user utility', () => {
     expect(cache.set).toHaveBeenCalledWith(cacheKey, {
       id: attributes.id,
       hash: attributes.hash,
+      anonymousId: attributes.anonymousId,
     })
   })
 

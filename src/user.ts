@@ -36,13 +36,24 @@ const createUser = (
   cache: IPutioAnalyticsCache,
   cacheKey: string,
 ): IPutioAnalyticsUser => {
+  const persist = (params: {
+    id?: string
+    hash?: string
+    anonymousId: string
+  }) =>
+    cache.set(cacheKey, {
+      id: params.id,
+      hash: params.hash,
+      anonymousId: params.anonymousId,
+    })
+
   let attributes = createAttributes(cache.get(cacheKey))
-  cache.set(cacheKey, { id: attributes.id, hash: attributes.hash })
+  persist(attributes)
 
   const alias = ({ id, hash }) => {
     attributes.id = String(id)
     attributes.hash = hash
-    cache.set(cacheKey, { id: attributes.id, hash: attributes.hash })
+    persist(attributes)
     return attributes
   }
 
@@ -50,7 +61,7 @@ const createUser = (
     attributes.id = String(id)
     attributes.hash = hash
     attributes.properties = properties
-    cache.set(cacheKey, { id: attributes.id, hash: attributes.hash })
+    persist(attributes)
     return attributes
   }
 
