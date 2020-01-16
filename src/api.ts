@@ -1,7 +1,7 @@
 import http from './http'
 import { IPutioAnalyticsUserAttributes } from './user'
 
-interface IPutioAnalyticsAPIOptions {
+export interface IPutioAnalyticsAPIOptions {
   baseURL: string
 }
 

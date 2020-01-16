@@ -37,6 +37,7 @@ const createUser = (
   cacheKey: string,
 ): IPutioAnalyticsUser => {
   let attributes = createAttributes(cache.get(cacheKey))
+  cache.set(cacheKey, { id: attributes.id, hash: attributes.hash })
 
   const alias = ({ id, hash }) => {
     attributes.id = String(id)

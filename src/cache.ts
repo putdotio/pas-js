@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-interface IPutioAnalyticsCacheOptions {
+export interface IPutioAnalyticsCacheOptions {
   domain: string
   expires: number
 }
