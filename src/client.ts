@@ -83,7 +83,7 @@ const createClient = (
     try {
       await api.alias(attributes)
     } catch (error) {
-      handleAPIError(error)
+      logger.warn(`alias error`, { error })
     }
   }
 
@@ -99,7 +99,7 @@ const createClient = (
     try {
       await api.identify(attributes)
     } catch (error) {
-      handleAPIError(error)
+      logger.warn(`identify error`, { error })
     }
   }
 
@@ -107,7 +107,7 @@ const createClient = (
     logger.debug(`track`)
 
     try {
-      await api.track(user.attributes, event)
+      await api.track(user.attributes.getValue(), event)
     } catch (error) {
       handleAPIError(error)
     }

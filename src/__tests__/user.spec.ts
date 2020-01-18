@@ -17,7 +17,7 @@ describe('user utility', () => {
 
   it('initializes with anonymous attributes when the cache is empty', () => {
     const user = createUser(cache, cacheKey)
-    expect(user.attributes).toMatchInlineSnapshot(`
+    expect(user.attributes.getValue()).toMatchInlineSnapshot(`
       Object {
         "anonymousId": "fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14",
         "hash": null,
@@ -31,7 +31,7 @@ describe('user utility', () => {
     cache.get.mockImplementation(() => ({ id: '77', hash: 'cached_user_hash' }))
 
     const user = createUser(cache, cacheKey)
-    expect(user.attributes).toMatchInlineSnapshot(`
+    expect(user.attributes.getValue()).toMatchInlineSnapshot(`
       Object {
         "anonymousId": "fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14",
         "hash": "cached_user_hash",
@@ -102,6 +102,10 @@ describe('user utility', () => {
       }
     `)
 
-    expect(cache.clear).toHaveBeenCalledWith(cacheKey)
+    expect(cache.set).toHaveBeenCalledWith(cacheKey, {
+      anonymousId: 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14',
+      hash: null,
+      id: null,
+    })
   })
 })

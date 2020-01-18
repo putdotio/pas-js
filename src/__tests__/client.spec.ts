@@ -1,7 +1,7 @@
 import { IPutioAnalyticsAPI } from '../api'
 import { IPutioAnalyticsCache } from '../cache'
 import createClient, { IPutioAnalyticsClient } from '../client'
-import createUser, { IPutioAnalyticsUser } from '../user'
+import createUser from '../user'
 
 const anonymousId = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
 jest.mock('uuid/v4', () => jest.fn(() => anonymousId))
@@ -21,7 +21,7 @@ const mockCacheFactory = (): IPutioAnalyticsCache => {
 const mockAPIAlias = jest.fn()
 const mockAPIIdentify = jest.fn()
 const mockAPITrack = jest.fn()
-const mockAPIFactory = () => {
+const mockAPIFactory = (): IPutioAnalyticsAPI => {
   return {
     alias: mockAPIAlias,
     identify: mockAPIIdentify,
@@ -124,7 +124,11 @@ describe('Client', () => {
     it('calls user.clear', () => {
       client.alias({ id: 7, hash: 'user_hash' })
       client.clear()
-      expect(mockCacheClear).toBeCalledTimes(1)
+      expect(mockCacheSet).toBeCalledWith('pas_js_user', {
+        anonymousId,
+        id: null,
+        hash: null,
+      })
     })
   })
 })

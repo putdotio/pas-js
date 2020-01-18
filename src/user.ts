@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs'
 import uuidv4 from 'uuid/v4'
 import { IPutioAnalyticsCache } from './cache'
 
@@ -19,7 +20,7 @@ const createAttributes = (
 })
 
 export interface IPutioAnalyticsUser {
-  attributes: IPutioAnalyticsUserAttributes
+  attributes: BehaviorSubject<IPutioAnalyticsUserAttributes>
   alias: (params: {
     id: string | number
     hash: string
@@ -36,39 +37,36 @@ const createUser = (
   cache: IPutioAnalyticsCache,
   cacheKey: string,
 ): IPutioAnalyticsUser => {
-  const persist = (params: {
-    id?: string
-    hash?: string
-    anonymousId: string
-  }) =>
-    cache.set(cacheKey, {
-      id: params.id,
-      hash: params.hash,
-      anonymousId: params.anonymousId,
-    })
+  const attributes = new BehaviorSubject(createAttributes(cache.get(cacheKey)))
 
-  let attributes = createAttributes(cache.get(cacheKey))
-  persist(attributes)
+  attributes.subscribe({
+    next: nextAttributes =>
+      cache.set(cacheKey, {
+        id: nextAttributes.id,
+        anonymousId: nextAttributes.anonymousId,
+        hash: nextAttributes.hash,
+      }),
+  })
 
   const alias = ({ id, hash }) => {
-    attributes.id = String(id)
-    attributes.hash = hash
-    persist(attributes)
-    return attributes
+    attributes.next({ ...attributes.getValue(), id: String(id), hash })
+    return attributes.getValue()
   }
 
   const identify = ({ id, hash, properties }) => {
-    attributes.id = String(id)
-    attributes.hash = hash
-    attributes.properties = properties
-    persist(attributes)
-    return attributes
+    attributes.next({
+      ...attributes.getValue(),
+      id: String(id),
+      hash,
+      properties,
+    })
+
+    return attributes.getValue()
   }
 
   const clear = () => {
-    attributes = createAttributes()
-    cache.clear(cacheKey)
-    return attributes
+    attributes.next(createAttributes())
+    return attributes.getValue()
   }
 
   return {
