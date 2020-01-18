@@ -8,14 +8,12 @@ import pkg from './package.json'
 
 export default [
   {
-    external: ['axios'],
     input: 'src/index.ts',
     output: [
       {
-        name: 'PutioAPI',
+        name: 'Pas',
         file: pkg.browser,
         format: 'umd',
-        globals: { axios: 'axios' },
         plugins: [terser()],
       },
       {

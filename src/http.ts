@@ -1,5 +1,4 @@
 import ExtendableError from 'es6-error'
-import 'isomorphic-fetch'
 
 export class HttpError extends ExtendableError {}
 export class NetworkError extends ExtendableError {}
