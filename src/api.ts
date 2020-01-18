@@ -22,11 +22,12 @@ const createAPI = (
       method: 'POST',
       body,
       headers: { 'Content-Type': 'application/json' },
+      timeout: 3000,
     })
 
     request.subscribe({
       error: e => {
-        if (e instanceof AjaxError && e.status >= 500) {
+        if (e instanceof AjaxError && (e.status >= 500 || e.status === 0)) {
           retryQueue.next([e.name])
         }
       },

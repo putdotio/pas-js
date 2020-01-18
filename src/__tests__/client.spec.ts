@@ -77,11 +77,16 @@ describe('Client', () => {
 
   describe('track method', () => {
     it('calls api.post with correct params', () => {
-      client.alias({ id: 7, hash: 'user_hash' })
       client.track({ name: 'event_name' })
-
-      expect(mockAPIPost).toHaveBeenNthCalledWith(2, '/events', {
-        events: [{ name: 'event_name', user_id: '7', user_hash: 'user_hash' }],
+      expect(mockAPIPost).toHaveBeenCalledWith('/events', {
+        events: [
+          {
+            name: 'event_name',
+            user_id: anonymousId,
+            user_hash: null,
+            properties: undefined,
+          },
+        ],
       })
     })
   })

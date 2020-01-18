@@ -21,36 +21,46 @@ describe('api utility', () => {
     xhrMock.teardown()
   })
 
-  describe('retry queue', () => {
-    it('writes failed request to retry queue if status code is >= 500', done => {
-      xhrMock.post(`${baseURL}/alias`, {
-        status: 500,
-      })
-
-      const request = api.post('/alias', { id: 1 })
-
-      request.subscribe({
-        error: () => {
-          expect(mockCache.set).toHaveBeenCalledTimes(1)
-          expect(mockCache.set).toHaveBeenCalledWith(cacheKey, ['AjaxError'])
-          done()
-        },
-      })
+  it('writes failed request to retry queue if status code is >= 500', done => {
+    xhrMock.post(`${baseURL}/alias`, {
+      status: 500,
     })
 
-    it('does not write failed request to retry queue if status code is < 500', done => {
-      xhrMock.post(`${baseURL}/alias`, {
-        status: 400,
-      })
+    const request = api.post('/alias', { id: 1 })
 
-      const request = api.post('/alias', { id: 1 })
+    request.subscribe({
+      error: () => {
+        expect(mockCache.set).toHaveBeenCalledTimes(1)
+        done()
+      },
+    })
+  })
 
-      request.subscribe({
-        error: () => {
-          expect(mockCache.set).not.toHaveBeenCalled()
-          done()
-        },
-      })
+  it('does not write failed request to retry queue if status code is < 500', done => {
+    xhrMock.post(`${baseURL}/alias`, {
+      status: 400,
+    })
+
+    const request = api.post('/alias', { id: 1 })
+
+    request.subscribe({
+      error: () => {
+        expect(mockCache.set).not.toHaveBeenCalled()
+        done()
+      },
+    })
+  })
+
+  it('writes runtime errors to retry queue', done => {
+    xhrMock.post(`${baseURL}/alias`, () => Promise.reject(new Error()))
+
+    const request = api.post('/alias', { id: 1 })
+
+    request.subscribe({
+      error: () => {
+        expect(mockCache.set).toHaveBeenCalledTimes(1)
+        done()
+      },
     })
   })
 })
