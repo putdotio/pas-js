@@ -1,19 +1,28 @@
 import xhrMock from 'xhr-mock'
 import createAPI, { IPutioAnalyticsAPIRetryItem } from '../api'
-import createCache from '../cache'
+
+const mockUUID = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
+jest.mock('uuid/v4', () => jest.fn(() => mockUUID))
+
+const mockCache = {
+  get: jest.fn((key: string): IPutioAnalyticsAPIRetryItem[] => []),
+  set: jest.fn((key: string, items: IPutioAnalyticsAPIRetryItem[]) => items),
+  clear: jest.fn(),
+}
 
 describe('api utility', () => {
-  const mockCache = {
-    get: jest.fn((key: string): IPutioAnalyticsAPIRetryItem[] => []),
-    set: jest.fn((key: string, items: IPutioAnalyticsAPIRetryItem[]) => items),
-    clear: jest.fn(),
-  }
+  const CACHE_KEY = 'pas_js_retry_queue'
+  const BASE_URL = '/api'
+  const REQUEST_PATH = '/alias'
+  const REQUEST_BODY = { foo: 'bar' }
+  const XHR_MOCK_URL = `${BASE_URL}${REQUEST_PATH}`
+  const RETRY_ITEM = { id: mockUUID, url: XHR_MOCK_URL, body: REQUEST_BODY }
 
-  const CACKE_KEY = 'pas_js_retry_queue'
-  const baseURL = '/api'
-  const api = createAPI(baseURL, mockCache)
+  let api = createAPI(BASE_URL, mockCache)
+  const createRequest = () => api.post(REQUEST_PATH, REQUEST_BODY)
 
   beforeEach(() => {
+    api = createAPI(BASE_URL, mockCache)
     jest.clearAllMocks()
     xhrMock.setup()
   })
@@ -22,46 +31,56 @@ describe('api utility', () => {
     xhrMock.teardown()
   })
 
-  it('writes failed request to retry queue if status code is >= 500', done => {
-    xhrMock.post(`${baseURL}/alias`, {
-      status: 500,
-    })
+  it('writes failed request to retry queue when status code is >= 500', done => {
+    xhrMock.post(XHR_MOCK_URL, { status: 500 })
 
-    const request = api.post('/alias', { id: 1 })
-
-    request.subscribe({
+    createRequest().subscribe({
       error: () => {
         expect(mockCache.set).toHaveBeenCalledTimes(1)
+        expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, [RETRY_ITEM])
         done()
       },
     })
   })
 
-  it('does not write failed request to retry queue if status code is < 500', done => {
-    xhrMock.post(`${baseURL}/alias`, {
-      status: 400,
+  it('writes failed requests due to runtime exceptions to retry queue', done => {
+    console.error = jest.fn() // tslint:disable-line
+    xhrMock.post(XHR_MOCK_URL, () => Promise.reject(new Error()))
+
+    createRequest().subscribe({
+      error: () => {
+        expect(mockCache.set).toHaveBeenCalledTimes(1)
+        expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, [RETRY_ITEM])
+        done()
+      },
     })
+  })
 
-    const request = api.post('/alias', { id: 1 })
+  it('writes consequent failures to retry queue', done => {
+    xhrMock.post(XHR_MOCK_URL, { status: 500 })
 
-    request.subscribe({
+    createRequest()
+    createRequest().subscribe({
+      error: () => {
+        expect(mockCache.set).toHaveBeenCalledTimes(2)
+        expect(mockCache.set).toHaveBeenNthCalledWith(1, CACHE_KEY, [
+          RETRY_ITEM,
+        ])
+        expect(mockCache.set).toHaveBeenNthCalledWith(2, CACHE_KEY, [
+          RETRY_ITEM,
+          RETRY_ITEM,
+        ])
+        done()
+      },
+    })
+  })
+
+  it('does not write failed request to retry queue when status code is < 500', done => {
+    xhrMock.post(XHR_MOCK_URL, { status: 400 })
+
+    createRequest().subscribe({
       error: () => {
         expect(mockCache.set).not.toHaveBeenCalled()
-        done()
-      },
-    })
-  })
-
-  it('writes runtime errors to retry queue', done => {
-    console.error = jest.fn() // tslint:disable-line
-
-    xhrMock.post(`${baseURL}/alias`, () => Promise.reject(new Error()))
-
-    const request = api.post('/alias', { id: 1 })
-
-    request.subscribe({
-      error: () => {
-        expect(mockCache.set).toHaveBeenCalledTimes(1)
         done()
       },
     })
