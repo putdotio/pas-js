@@ -1,5 +1,5 @@
+import { ajax } from 'rxjs/ajax'
 import { IPutioAnalyticsCache } from './cache'
-import http from './http'
 import { IPutioAnalyticsUserAttributes } from './user'
 
 export interface IPutioAnalyticsAPIOptions {
@@ -12,12 +12,12 @@ export interface IPutioAnalyticsAPIEvent {
 }
 
 export interface IPutioAnalyticsAPI {
-  alias: (attributes: IPutioAnalyticsUserAttributes) => Promise<any>
-  identify: (attributes: IPutioAnalyticsUserAttributes) => Promise<any>
+  alias: (attributes: IPutioAnalyticsUserAttributes) => void
+  identify: (attributes: IPutioAnalyticsUserAttributes) => void
   track: (
     attributes: IPutioAnalyticsUserAttributes,
     event: IPutioAnalyticsAPIEvent,
-  ) => Promise<any>
+  ) => void
 }
 
 const createAPI = (
@@ -25,36 +25,48 @@ const createAPI = (
   cache: IPutioAnalyticsCache,
 ): IPutioAnalyticsAPI => {
   const alias = (attributes: IPutioAnalyticsUserAttributes) =>
-    http(`${baseURL}/api/alias`, {
-      previous_id: attributes.anonymousId,
-      id: attributes.id,
-      hash: attributes.hash,
+    ajax({
+      url: `${baseURL}/api/alias`,
+      method: 'POST',
+      body: {
+        previous_id: attributes.anonymousId,
+        id: attributes.id,
+        hash: attributes.hash,
+      },
     })
 
   const identify = (attributes: IPutioAnalyticsUserAttributes) =>
-    http(`${baseURL}/api/users`, {
-      users: [
-        {
-          id: attributes.id,
-          hash: attributes.hash,
-          properties: attributes.properties,
-        },
-      ],
+    ajax({
+      url: `${baseURL}/api/users`,
+      method: 'POST',
+      body: {
+        users: [
+          {
+            id: attributes.id,
+            hash: attributes.hash,
+            properties: attributes.properties,
+          },
+        ],
+      },
     })
 
   const track = (
     attributes: IPutioAnalyticsUserAttributes,
     event: IPutioAnalyticsAPIEvent,
   ) =>
-    http(`${baseURL}/api/events`, {
-      events: [
-        {
-          user_id: attributes.id,
-          user_hash: attributes.hash,
-          name: event.name,
-          properties: event.properties,
-        },
-      ],
+    ajax({
+      url: `${baseURL}/api/events`,
+      method: 'POST',
+      body: {
+        events: [
+          {
+            user_id: attributes.id,
+            user_hash: attributes.hash,
+            name: event.name,
+            properties: event.properties,
+          },
+        ],
+      },
     })
 
   return {
