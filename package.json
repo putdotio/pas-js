@@ -17,7 +17,8 @@
     "build": "rollup -c",
     "test": "jest",
     "lint": "tslint 'src/**/*.ts'",
-    "prebuild": "rm -rf dist && npm run lint"
+    "prebuild": "rm -rf dist && npm run lint",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "author": "Put.io <devs@put.io>",
   "license": "MIT",
@@ -43,6 +44,7 @@
     "@types/jest": "^24.0.25",
     "@types/js-cookie": "^2.2.4",
     "@types/uuid": "^3.4.6",
+    "coveralls": "^3.0.9",
     "jest": "^24.9.0",
     "prettier": "^1.19.1",
     "rollup": "^1.29.0",
