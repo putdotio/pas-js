@@ -9,7 +9,7 @@ jest.mock('uuid/v4', () => jest.fn(() => anonymousId))
 const mockCacheGet = jest.fn()
 const mockCacheSet = jest.fn()
 const mockCacheClear = jest.fn()
-const mockCacheFactory = (): IPutioAnalyticsCache => {
+const mockCacheFactory = (): IPutioAnalyticsCache<any> => {
   const cache = {}
   return {
     get: mockCacheGet.mockImplementation(key => cache[key]),

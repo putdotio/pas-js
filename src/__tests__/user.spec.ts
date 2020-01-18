@@ -1,16 +1,16 @@
 import createUser from '../user'
 
-jest.mock('uuid/v4', () =>
-  jest.fn(() => 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'),
-)
+const anonymousId = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
+jest.mock('uuid/v4', () => jest.fn(() => anonymousId))
+
+const mockCache = {
+  get: jest.fn(),
+  set: jest.fn(),
+  clear: jest.fn(),
+}
 
 describe('user utility', () => {
   const CACHE_KEY = 'pas_js_user'
-  const mockCache = {
-    get: jest.fn(),
-    set: jest.fn(),
-    clear: jest.fn(),
-  }
 
   beforeEach(jest.clearAllMocks)
 
@@ -26,7 +26,7 @@ describe('user utility', () => {
     `)
 
     expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
-      anonymousId: 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14',
+      anonymousId,
       hash: null,
       id: null,
     })
@@ -50,7 +50,7 @@ describe('user utility', () => {
     `)
 
     expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
-      anonymousId: 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14',
+      anonymousId,
       hash: 'cached_user_hash',
       id: '77',
     })
