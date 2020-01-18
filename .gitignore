@@ -1,6 +1,5 @@
-.DS_Store
 node_modules
 dist
-.cache
-package-lock.json
-
+*.log
+coverage
+.DS_Store
