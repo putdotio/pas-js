@@ -6,7 +6,7 @@ export interface IPutioAnalyticsUserAttributes {
   anonymousId: string
   id?: string
   hash?: string
-  properties: any
+  properties?: any
 }
 
 const createAttributes = (
