@@ -50,8 +50,7 @@ const createClient = (
 ): IPutioAnalyticsClient => {
   const config = merge(
     {
-      apiURL: 'https://pas.put.io',
-      loglevel: 'WARN',
+      apiURL: 'https://pas.put.io/api',
       cache: {
         domain: '.put.io',
         expires: 365,
