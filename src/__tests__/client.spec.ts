@@ -18,14 +18,10 @@ const mockCacheFactory = (): IPutioAnalyticsCache => {
   }
 }
 
-const mockAPIAlias = jest.fn()
-const mockAPIIdentify = jest.fn()
-const mockAPITrack = jest.fn()
+const mockAPIPost = jest.fn()
 const mockAPIFactory = (): IPutioAnalyticsAPI => {
   return {
-    alias: mockAPIAlias,
-    identify: mockAPIIdentify,
-    track: mockAPITrack,
+    post: mockAPIPost,
   }
 }
 
@@ -53,37 +49,40 @@ describe('Client', () => {
   })
 
   describe('alias method', () => {
-    it('calls api.alias with correct params', () => {
+    it('calls api.post with correct params', () => {
       client.alias({ id: 7, hash: 'user_hash' })
-      expect(mockAPIAlias).toBeCalledWith(
-        expect.objectContaining({ id: '7', hash: 'user_hash' }),
-      )
+      expect(mockAPIPost).toBeCalledWith('/alias', {
+        id: '7',
+        hash: 'user_hash',
+        previous_id: anonymousId,
+      })
     })
   })
 
   describe('identify method', () => {
-    it('calls api.identify with correct params', () => {
+    it('calls api.post with correct params', () => {
       client.identify({ id: 7, hash: 'user_hash', properties: { foo: 'bar' } })
 
-      expect(mockAPIIdentify).toBeCalledWith(
-        expect.objectContaining({
-          id: '7',
-          hash: 'user_hash',
-          properties: { foo: 'bar' },
-        }),
-      )
+      expect(mockAPIPost).toBeCalledWith('/users', {
+        users: [
+          {
+            id: '7',
+            hash: 'user_hash',
+            properties: { foo: 'bar' },
+          },
+        ],
+      })
     })
   })
 
   describe('track method', () => {
-    it('calls api.track with correct params', () => {
+    it('calls api.post with correct params', () => {
       client.alias({ id: 7, hash: 'user_hash' })
       client.track({ name: 'event_name' })
 
-      expect(mockAPITrack).toBeCalledWith(
-        expect.objectContaining({ id: '7', hash: 'user_hash' }),
-        expect.objectContaining({ name: 'event_name' }),
-      )
+      expect(mockAPIPost).toHaveBeenNthCalledWith(2, '/events', {
+        events: [{ name: 'event_name', user_id: '7', user_hash: 'user_hash' }],
+      })
     })
   })
 
@@ -103,20 +102,23 @@ describe('Client', () => {
       client.alias({ id: 7, hash: 'user_hash' })
       client.pageView()
 
-      expect(mockAPITrack).toBeCalledWith(
-        expect.objectContaining({ id: '7', hash: 'user_hash' }),
-        {
-          name: 'page_viewed',
-          properties: {
-            domain: 'https://app.put.io',
-            path: '/files',
-            referrer: '',
-            utm_campaign: 'UTM_CAMPAIGN',
-            utm_medium: 'UTM_MEDIUM',
-            utm_source: 'UTM_SOURCE',
+      expect(mockAPIPost).toHaveBeenNthCalledWith(2, '/events', {
+        events: [
+          {
+            user_id: '7',
+            user_hash: 'user_hash',
+            name: 'page_viewed',
+            properties: {
+              domain: 'https://app.put.io',
+              path: '/files',
+              referrer: '',
+              utm_campaign: 'UTM_CAMPAIGN',
+              utm_medium: 'UTM_MEDIUM',
+              utm_source: 'UTM_SOURCE',
+            },
           },
-        },
-      )
+        ],
+      })
     })
   })
 

@@ -1,78 +1,42 @@
-import { ajax } from 'rxjs/ajax'
+import { BehaviorSubject, Observable } from 'rxjs'
+import { ajax, AjaxError, AjaxResponse } from 'rxjs/ajax'
 import { IPutioAnalyticsCache } from './cache'
-import { IPutioAnalyticsUserAttributes } from './user'
-
-export interface IPutioAnalyticsAPIOptions {
-  baseURL: string
-}
-
-export interface IPutioAnalyticsAPIEvent {
-  name: string
-  properties?: any
-}
-
 export interface IPutioAnalyticsAPI {
-  alias: (attributes: IPutioAnalyticsUserAttributes) => void
-  identify: (attributes: IPutioAnalyticsUserAttributes) => void
-  track: (
-    attributes: IPutioAnalyticsUserAttributes,
-    event: IPutioAnalyticsAPIEvent,
-  ) => void
+  post: (path: string, body: object) => Observable<AjaxResponse>
 }
 
 const createAPI = (
   baseURL: string,
   cache: IPutioAnalyticsCache,
 ): IPutioAnalyticsAPI => {
-  const alias = (attributes: IPutioAnalyticsUserAttributes) =>
-    ajax({
-      url: `${baseURL}/api/alias`,
+  const cacheKey = 'pas_js_retry_queue'
+  const retryQueue = new BehaviorSubject([])
+
+  retryQueue.subscribe({
+    next: v => cache.set(cacheKey, v),
+  })
+
+  const post = (path: string, body: object) => {
+    const request = ajax({
+      url: `${baseURL}${path}`,
       method: 'POST',
-      body: {
-        previous_id: attributes.anonymousId,
-        id: attributes.id,
-        hash: attributes.hash,
+      body,
+      headers: { 'Content-Type': 'application/json' },
+    })
+
+    request.subscribe({
+      error: e => {
+        if (e instanceof AjaxError && e.status >= 500) {
+          retryQueue.next([e.name])
+        }
       },
     })
 
-  const identify = (attributes: IPutioAnalyticsUserAttributes) =>
-    ajax({
-      url: `${baseURL}/api/users`,
-      method: 'POST',
-      body: {
-        users: [
-          {
-            id: attributes.id,
-            hash: attributes.hash,
-            properties: attributes.properties,
-          },
-        ],
-      },
-    })
-
-  const track = (
-    attributes: IPutioAnalyticsUserAttributes,
-    event: IPutioAnalyticsAPIEvent,
-  ) =>
-    ajax({
-      url: `${baseURL}/api/events`,
-      method: 'POST',
-      body: {
-        events: [
-          {
-            user_id: attributes.id,
-            user_hash: attributes.hash,
-            name: event.name,
-            properties: event.properties,
-          },
-        ],
-      },
-    })
+    return request
+  }
 
   return {
-    alias,
-    identify,
-    track,
+    post,
   }
 }
 

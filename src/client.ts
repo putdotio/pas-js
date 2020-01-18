@@ -1,11 +1,7 @@
 import merge from 'deepmerge'
 import queryString from 'query-string'
 import pkg from '../package.json'
-import createAPI, {
-  IPutioAnalyticsAPI,
-  IPutioAnalyticsAPIEvent,
-  IPutioAnalyticsAPIOptions,
-} from './api'
+import createAPI, { IPutioAnalyticsAPI } from './api'
 import createCache, {
   IPutioAnalyticsCache,
   IPutioAnalyticsCacheOptions,
@@ -35,9 +31,14 @@ export interface IPutioAnalyticsClient {
   version: string
   alias: (params: { id: any; hash: string }) => void
   identify: (params: { id: any; hash: string; properties: any }) => void
-  track: (event: IPutioAnalyticsAPIEvent) => void
+  track: (event: IPutioAnalyticsEvent) => void
   pageView: () => void
   clear: () => void
+}
+
+interface IPutioAnalyticsEvent {
+  name: string
+  properties?: any
 }
 
 const createClient = (
@@ -64,7 +65,12 @@ const createClient = (
   const api = factories.createAPI(config.apiURL, cache)
 
   const alias = (params: { id: any; hash: string }) => {
-    api.alias(user.alias(params))
+    const attributes = user.alias(params)
+    api.post('/alias', {
+      previous_id: attributes.anonymousId,
+      id: attributes.id,
+      hash: attributes.hash,
+    })
   }
 
   const identify = async (params: {
@@ -72,11 +78,30 @@ const createClient = (
     hash: string
     properties: any
   }) => {
-    api.identify(user.identify(params))
+    const attributes = user.identify(params)
+    api.post('/users', {
+      users: [
+        {
+          id: attributes.id,
+          hash: attributes.hash,
+          properties: attributes.properties,
+        },
+      ],
+    })
   }
 
-  const track = async (event: IPutioAnalyticsAPIEvent) => {
-    api.track(user.attributes.getValue(), event)
+  const track = async (event: IPutioAnalyticsEvent) => {
+    const attributes = user.attributes.getValue()
+    api.post('/events', {
+      events: [
+        {
+          user_id: attributes.id || attributes.anonymousId,
+          user_hash: attributes.hash,
+          name: event.name,
+          properties: event.properties,
+        },
+      ],
+    })
   }
 
   const pageView = () => {
