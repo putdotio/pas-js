@@ -33,13 +33,15 @@ export interface IPutioAnalyticsUser {
   clear: () => IPutioAnalyticsUserAttributes
 }
 
-const createUser = (cache: IPutioAnalyticsCache): IPutioAnalyticsUser => {
-  const cacheKey = 'pas_js_user'
-  const attributes = new BehaviorSubject(createAttributes(cache.get(cacheKey)))
+const createUser = (
+  cache: IPutioAnalyticsCache<IPutioAnalyticsUserAttributes>,
+): IPutioAnalyticsUser => {
+  const CACHE_KEY = 'pas_js_user'
+  const attributes = new BehaviorSubject(createAttributes(cache.get(CACHE_KEY)))
 
   attributes.subscribe({
     next: nextAttributes =>
-      cache.set(cacheKey, {
+      cache.set(CACHE_KEY, {
         id: nextAttributes.id,
         anonymousId: nextAttributes.anonymousId,
         hash: nextAttributes.hash,

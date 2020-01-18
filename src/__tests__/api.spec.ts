@@ -1,14 +1,15 @@
 import xhrMock from 'xhr-mock'
-import createAPI from '../api'
+import createAPI, { IPutioAnalyticsAPIRetryItem } from '../api'
+import createCache from '../cache'
 
 describe('api utility', () => {
   const mockCache = {
-    get: jest.fn(),
-    set: jest.fn(),
+    get: jest.fn((key: string): IPutioAnalyticsAPIRetryItem[] => []),
+    set: jest.fn((key: string, items: IPutioAnalyticsAPIRetryItem[]) => items),
     clear: jest.fn(),
   }
 
-  const cacheKey = 'pas_js_retry_queue'
+  const CACKE_KEY = 'pas_js_retry_queue'
   const baseURL = '/api'
   const api = createAPI(baseURL, mockCache)
 
@@ -52,6 +53,8 @@ describe('api utility', () => {
   })
 
   it('writes runtime errors to retry queue', done => {
+    console.error = jest.fn() // tslint:disable-line
+
     xhrMock.post(`${baseURL}/alias`, () => Promise.reject(new Error()))
 
     const request = api.post('/alias', { id: 1 })

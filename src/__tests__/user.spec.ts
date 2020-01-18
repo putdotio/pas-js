@@ -5,7 +5,7 @@ jest.mock('uuid/v4', () =>
 )
 
 describe('user utility', () => {
-  const cacheKey = 'pas_js_user'
+  const CACHE_KEY = 'pas_js_user'
   const mockCache = {
     get: jest.fn(),
     set: jest.fn(),
@@ -25,7 +25,7 @@ describe('user utility', () => {
       }
     `)
 
-    expect(mockCache.set).toHaveBeenCalledWith(cacheKey, {
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
       anonymousId: 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14',
       hash: null,
       id: null,
@@ -49,7 +49,7 @@ describe('user utility', () => {
       }
     `)
 
-    expect(mockCache.set).toHaveBeenCalledWith(cacheKey, {
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
       anonymousId: 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14',
       hash: 'cached_user_hash',
       id: '77',
@@ -69,7 +69,7 @@ describe('user utility', () => {
       }
     `)
 
-    expect(mockCache.set).toHaveBeenCalledWith(cacheKey, {
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
       id: attributes.id,
       hash: attributes.hash,
       anonymousId: attributes.anonymousId,
@@ -96,7 +96,7 @@ describe('user utility', () => {
       }
     `)
 
-    expect(mockCache.set).toHaveBeenCalledWith(cacheKey, {
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
       id: attributes.id,
       hash: attributes.hash,
       anonymousId: attributes.anonymousId,
@@ -117,7 +117,7 @@ describe('user utility', () => {
       }
     `)
 
-    expect(mockCache.set).toHaveBeenCalledWith(cacheKey, {
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
       anonymousId: 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14',
       hash: null,
       id: null,
