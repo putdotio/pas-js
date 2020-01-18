@@ -1,7 +1,5 @@
 node_modules
-build
 dist
 *.log
 coverage
 .DS_Store
-demo
