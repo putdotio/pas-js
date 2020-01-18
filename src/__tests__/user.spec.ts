@@ -11,12 +11,12 @@ describe('user utility', () => {
     clear: jest.fn(),
   }
 
-  const cacheKey = 'key'
+  const cacheKey = 'pas_js_user'
 
   beforeEach(jest.clearAllMocks)
 
   it('initializes with anonymous attributes when the cache is empty', () => {
-    const user = createUser(cache, cacheKey)
+    const user = createUser(cache)
     expect(user.attributes.getValue()).toMatchInlineSnapshot(`
       Object {
         "anonymousId": "fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14",
@@ -30,7 +30,7 @@ describe('user utility', () => {
   it('initializes with persisted attributes when the cache is not empty', () => {
     cache.get.mockImplementation(() => ({ id: '77', hash: 'cached_user_hash' }))
 
-    const user = createUser(cache, cacheKey)
+    const user = createUser(cache)
     expect(user.attributes.getValue()).toMatchInlineSnapshot(`
       Object {
         "anonymousId": "fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14",
@@ -42,7 +42,7 @@ describe('user utility', () => {
   })
 
   it('sets user id and hash when calling the alias method', () => {
-    const user = createUser(cache, cacheKey)
+    const user = createUser(cache)
     const attributes = user.alias({ id: 7, hash: 'user_hash' })
 
     expect(attributes).toMatchInlineSnapshot(`
@@ -62,7 +62,7 @@ describe('user utility', () => {
   })
 
   it('sets user id, hash and properties when calling the identify method', () => {
-    const user = createUser(cache, cacheKey)
+    const user = createUser(cache)
     const attributes = user.identify({
       id: 7,
       hash: 'user_hash',
@@ -89,7 +89,7 @@ describe('user utility', () => {
   })
 
   it('resets attributes when calling the clear method', () => {
-    const user = createUser(cache, cacheKey)
+    const user = createUser(cache)
     user.alias({ id: 7, hash: 'user_hash' })
     const attributes = user.clear()
 

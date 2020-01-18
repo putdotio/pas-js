@@ -1,3 +1,4 @@
+import { IPutioAnalyticsCache } from './cache'
 import http from './http'
 import { IPutioAnalyticsUserAttributes } from './user'
 
@@ -19,16 +20,19 @@ export interface IPutioAnalyticsAPI {
   ) => Promise<any>
 }
 
-const createAPI = (options: IPutioAnalyticsAPIOptions): IPutioAnalyticsAPI => {
+const createAPI = (
+  baseURL: string,
+  cache: IPutioAnalyticsCache,
+): IPutioAnalyticsAPI => {
   const alias = (attributes: IPutioAnalyticsUserAttributes) =>
-    http(`${options.baseURL}/api/alias`, {
+    http(`${baseURL}/api/alias`, {
       previous_id: attributes.anonymousId,
       id: attributes.id,
       hash: attributes.hash,
     })
 
   const identify = (attributes: IPutioAnalyticsUserAttributes) =>
-    http(`${options.baseURL}/api/users`, {
+    http(`${baseURL}/api/users`, {
       users: [
         {
           id: attributes.id,
@@ -42,7 +46,7 @@ const createAPI = (options: IPutioAnalyticsAPIOptions): IPutioAnalyticsAPI => {
     attributes: IPutioAnalyticsUserAttributes,
     event: IPutioAnalyticsAPIEvent,
   ) =>
-    http(`${options.baseURL}/api/events`, {
+    http(`${baseURL}/api/events`, {
       events: [
         {
           user_id: attributes.id,
