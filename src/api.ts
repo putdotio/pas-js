@@ -8,7 +8,7 @@ export interface IPutioAnalyticsAPI {
 
 export interface IPutioAnalyticsAPIRetryItem {
   id: string
-  url: string
+  path: string
   body: object
 }
 
@@ -18,19 +18,23 @@ const createAPI = (
 ): IPutioAnalyticsAPI => {
   const CACHE_KEY = 'pas_js_retry_queue'
   const retryQueue = new BehaviorSubject<IPutioAnalyticsAPIRetryItem[]>(
-    cache.get(CACHE_KEY),
+    cache.get(CACHE_KEY) || [],
   )
+
+  retryQueue.getValue().forEach(retryItem => {
+    const next = retryQueue.getValue().filter(i => i.id !== retryItem.id)
+    retryQueue.next(next)
+    post(retryItem.path, retryItem.body)
+  })
 
   retryQueue.subscribe({
     next: v => cache.set(CACHE_KEY, v),
   })
 
-  const post = (path: string, body: object) => {
-    const url = `${baseURL}${path}`
-
+  function post(path: string, body: object) {
     const request = ajax({
+      url: `${baseURL}${path}`,
       method: 'POST',
-      url,
       body,
       headers: { 'Content-Type': 'application/json' },
       timeout: 3000,
@@ -41,7 +45,7 @@ const createAPI = (
         if (e instanceof AjaxError && (e.status >= 500 || e.status === 0)) {
           const retryItem = {
             id: uuid(),
-            url,
+            path,
             body,
           }
 
