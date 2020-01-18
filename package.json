@@ -31,8 +31,6 @@
   },
   "prettier": "@putdotio/prettier-config",
   "dependencies": {
-    "deepmerge": "^4.2.2",
-    "es6-error": "^4.1.1",
     "js-cookie": "^2.2.1",
     "query-string": "^6.9.0",
     "rxjs": "^6.5.4",

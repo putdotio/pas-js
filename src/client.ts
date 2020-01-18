@@ -1,32 +1,8 @@
-import merge from 'deepmerge'
 import queryString from 'query-string'
 import pkg from '../package.json'
-import createAPI, { IPutioAnalyticsAPI } from './api'
-import createCache, {
-  IPutioAnalyticsCache,
-  IPutioAnalyticsCacheOptions,
-} from './cache'
-import createUser, { IPutioAnalyticsUser } from './user'
-
-interface IPutioAnalyticsClientConfig {
-  apiURL?: string
-  cache?: {
-    domain: string
-    expires: number
-    userKey: string
-    eventQueueKey: string
-  }
-}
-
-interface IPutioAnalyticsClientFactories {
-  createCache: (options: IPutioAnalyticsCacheOptions) => IPutioAnalyticsCache
-  createAPI: (
-    baseURL: string,
-    cache: IPutioAnalyticsCache,
-  ) => IPutioAnalyticsAPI
-  createUser: (cache: IPutioAnalyticsCache) => IPutioAnalyticsUser
-}
-
+import createAPI from './api'
+import createCache from './cache'
+import createUser from './user'
 export interface IPutioAnalyticsClient {
   version: string
   alias: (params: { id: any; hash: string }) => void
@@ -41,25 +17,20 @@ interface IPutioAnalyticsEvent {
   properties?: any
 }
 
-const createClient = (
-  baseConfig: IPutioAnalyticsClientConfig = {},
-  factories: IPutioAnalyticsClientFactories = {
+const createClient = ({
+  config = {
+    apiURL: 'https://pas.put.io/api',
+    cache: {
+      domain: '.put.io',
+      expires: 365,
+    },
+  },
+  factories = {
     createAPI,
     createCache,
     createUser,
   },
-): IPutioAnalyticsClient => {
-  const config = merge(
-    {
-      apiURL: 'https://pas.put.io/api',
-      cache: {
-        domain: '.put.io',
-        expires: 365,
-      },
-    },
-    baseConfig,
-  )
-
+} = {}): IPutioAnalyticsClient => {
   const cache = factories.createCache(config.cache)
   const user = factories.createUser(cache)
   const api = factories.createAPI(config.apiURL, cache)

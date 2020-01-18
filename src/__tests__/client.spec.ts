@@ -30,10 +30,20 @@ describe('Client', () => {
 
   afterEach(jest.clearAllMocks)
   beforeEach(() => {
-    client = createClient(
-      { apiURL: 'example.com' },
-      { createAPI: mockAPIFactory, createCache: mockCacheFactory, createUser },
-    )
+    client = createClient({
+      config: {
+        apiURL: 'https://pas.put.io/api',
+        cache: {
+          domain: '.put.io',
+          expires: 365,
+        },
+      },
+      factories: {
+        createAPI: mockAPIFactory,
+        createCache: mockCacheFactory,
+        createUser,
+      },
+    })
   })
 
   it('initializes with default params', () => {
