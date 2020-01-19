@@ -42,7 +42,7 @@ const createAPI = (
 
     request.subscribe({
       error: e => {
-        if (e instanceof AjaxError && (e.status >= 500 || e.status === 0)) {
+        if (e instanceof AjaxError && (e.status > 500 || e.status === 0)) {
           const retryItem = {
             id: uuid(),
             path,

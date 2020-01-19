@@ -15,11 +15,7 @@ describe('cache utility', () => {
 
   it('calls Cookies.set for saving data to cookies', () => {
     cache.set('key', { foo: 'bar' })
-    expect(Cookies.set).toBeCalledWith(
-      'key',
-      JSON.stringify({ foo: 'bar' }),
-      options,
-    )
+    expect(Cookies.set).toBeCalledWith('key', { foo: 'bar' }, options)
   })
 
   it('calls Cookies.getJSON for reading data from cookies', () => {

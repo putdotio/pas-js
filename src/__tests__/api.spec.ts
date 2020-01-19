@@ -40,8 +40,8 @@ describe('api utility', () => {
     xhrMock.teardown()
   })
 
-  it('writes failed request to retry queue when status code is >= 500', done => {
-    xhrMock.post(XHR_MOCK_URL, { status: 500 })
+  it('writes failed request to retry queue when status code is > 500', done => {
+    xhrMock.post(XHR_MOCK_URL, { status: 502 })
 
     createRequest().subscribe({
       error: () => {
@@ -65,7 +65,7 @@ describe('api utility', () => {
   })
 
   it('writes consequent failures to retry queue', done => {
-    xhrMock.post(XHR_MOCK_URL, { status: 500 })
+    xhrMock.post(XHR_MOCK_URL, { status: 502 })
 
     createRequest()
     createRequest().subscribe({

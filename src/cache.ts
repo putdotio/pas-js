@@ -15,7 +15,7 @@ const createCache = (
   options: IPutioAnalyticsCacheOptions,
 ): IPutioAnalyticsCache<any> => ({
   set: (key, value) => {
-    Cookies.set(key, JSON.stringify(value), {
+    Cookies.set(key, value, {
       expires: options.expires,
       domain: options.domain,
     })
