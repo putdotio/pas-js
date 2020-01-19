@@ -38,7 +38,7 @@ const Pas = window.Pas
 
 ## API
 
-| Name         | Parameters                                                   |
+| Method Name  | Parameters                                                   |
 | :----------- | :----------------------------------------------------------- |
 | **alias**    | `({ id: string/number, hash: string })`                      |
 | **identify** | `({ id: string/number, hash: string, properties?: object })` |
