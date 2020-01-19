@@ -23,7 +23,7 @@ import Pas from '@putdotio/pas-js'
 ### CommonJS
 
 ```js
-const PutioAPI = require('@putdotio/pas-js').default
+const Pas = require('@putdotio/pas-js').default
 ```
 
 ### Browser
