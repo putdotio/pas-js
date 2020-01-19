@@ -1,10 +1,8 @@
 import queryString from 'query-string'
-import pkg from '../package.json'
 import createAPI from './api'
 import createCache from './cache'
 import createUser from './user'
 export interface IPutioAnalyticsClient {
-  version: string
   alias: (params: { id: any; hash: string }) => void
   identify: (params: { id: any; hash: string; properties: any }) => void
   track: (eventName: string, eventProperties?: object) => void
@@ -83,7 +81,6 @@ const createClient = ({
   const clear = () => user.clear()
 
   return {
-    version: pkg.version,
     alias,
     identify,
     track,
