@@ -21,10 +21,19 @@ describe('api utility', () => {
   let api = createAPI(BASE_URL, mockCache)
   const createRequest = () => api.post(REQUEST_PATH, REQUEST_BODY)
 
+  beforeAll(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => null)
+  })
+
+  afterAll(() => {
+    const consoleError = console.error as jest.Mock // tslint:disable-line
+    consoleError.mockRestore()
+  })
+
   beforeEach(() => {
+    xhrMock.setup()
     api = createAPI(BASE_URL, mockCache)
     jest.clearAllMocks()
-    xhrMock.setup()
   })
 
   afterEach(() => {
@@ -44,7 +53,6 @@ describe('api utility', () => {
   })
 
   it('writes failed requests due to runtime exceptions to retry queue', done => {
-    console.error = jest.fn() // tslint:disable-line
     xhrMock.post(XHR_MOCK_URL, () => Promise.reject(new Error()))
 
     createRequest().subscribe({
