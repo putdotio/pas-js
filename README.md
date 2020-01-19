@@ -5,9 +5,9 @@
 ![npm (scoped)](https://img.shields.io/npm/v/@putdotio/pas-js)
 ![GitHub](https://img.shields.io/github/license/putdotio/pas-js)
 
-Client-side JavaScript library for Put.io Analytics System
+Browser client for [Put.io Analytics System](https://github.com/putdotio/pas)
 
-## Usage
+## Installation
 
 ```bash
 $ npm install @putdotio/pas-js -S
@@ -27,7 +27,7 @@ const PutioAPI = require('@putdotio/pas-js').default
 
 ### Browser
 
-```
+```html
 <script src="https://unpkg.com/@putdotio/pas-js/dist/index.umd.js"></script>
 ```
 
@@ -35,11 +35,11 @@ const PutioAPI = require('@putdotio/pas-js').default
 const Pas = window.Pas
 ```
 
-## Methods
+## API
 
-| Name         | Parameters      | 
-| :----------- | :-------------- | 
-| **alias**    | `({ id: string/number, hash: string })` |
-| **identify** | `({ id: string/number, hash: string, properties: object })` |
-| **track**    | `({ name: number, properties: object })` |
-| **pageView** | - |
+| Name         | Parameters                                                   |
+| :----------- | :----------------------------------------------------------- |
+| **alias**    | `({ id: string/number, hash: string })`                      |
+| **identify** | `({ id: string/number, hash: string, properties?: object })` |
+| **track**    | `(name: string, properties?: object)`                        |
+| **pageView** | -                                                            |
