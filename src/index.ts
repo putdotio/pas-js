@@ -1,4 +1,5 @@
 import createClient from './client'
 
-export * from './client'
+export const create = createClient
+
 export default createClient()
