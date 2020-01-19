@@ -7,14 +7,9 @@ export interface IPutioAnalyticsClient {
   version: string
   alias: (params: { id: any; hash: string }) => void
   identify: (params: { id: any; hash: string; properties: any }) => void
-  track: (event: IPutioAnalyticsEvent) => void
+  track: (eventName: string, eventProperties?: object) => void
   pageView: () => void
   clear: () => void
-}
-
-interface IPutioAnalyticsEvent {
-  name: string
-  properties?: any
 }
 
 const createClient = ({
@@ -44,11 +39,7 @@ const createClient = ({
     })
   }
 
-  const identify = async (params: {
-    id: any
-    hash: string
-    properties: any
-  }) => {
+  const identify = (params: { id: any; hash: string; properties: any }) => {
     const attributes = user.identify(params)
     api.post('/users', {
       users: [
@@ -61,15 +52,15 @@ const createClient = ({
     })
   }
 
-  const track = async (event: IPutioAnalyticsEvent) => {
+  const track = (name: string, properties: object = {}) => {
     const attributes = user.attributes.getValue()
     api.post('/events', {
       events: [
         {
           user_id: attributes.id || attributes.anonymousId,
           user_hash: attributes.hash,
-          name: event.name,
-          properties: event.properties,
+          name,
+          properties,
         },
       ],
     })
@@ -79,16 +70,13 @@ const createClient = ({
     const { search, origin, pathname } = window.location
     const { utm_source, utm_medium, utm_campaign } = queryString.parse(search)
 
-    return track({
-      name: 'page_viewed',
-      properties: {
-        domain: origin,
-        path: pathname,
-        referrer: document.referrer,
-        utm_source,
-        utm_medium,
-        utm_campaign,
-      },
+    return track('page_viewed', {
+      domain: origin,
+      path: pathname,
+      referrer: document.referrer,
+      utm_source,
+      utm_medium,
+      utm_campaign,
     })
   }
 

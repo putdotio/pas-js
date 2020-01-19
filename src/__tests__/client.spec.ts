@@ -87,14 +87,14 @@ describe('Client', () => {
 
   describe('track method', () => {
     it('calls api.post with correct params', () => {
-      client.track({ name: 'event_name' })
+      client.track('event_name')
       expect(mockAPIPost).toHaveBeenCalledWith('/events', {
         events: [
           {
             name: 'event_name',
             user_id: anonymousId,
             user_hash: null,
-            properties: undefined,
+            properties: {},
           },
         ],
       })
