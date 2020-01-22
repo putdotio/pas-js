@@ -26,16 +26,6 @@ import Pas from '@putdotio/pas-js'
 const Pas = require('@putdotio/pas-js').default
 ```
 
-### Browser
-
-```html
-<script src="https://unpkg.com/@putdotio/pas-js/dist/index.umd.js"></script>
-```
-
-```js
-const Pas = window.Pas
-```
-
 ## API
 
 | Method Name  | Parameters                                                   |
