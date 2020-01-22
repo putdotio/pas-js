@@ -7,7 +7,7 @@ import pkg from './package.json'
 
 export default [
   {
-    external: ['rxjs'],
+    external: ['rxjs', 'query-string', 'uuid', 'js-cookie'],
     input: 'src/index.ts',
     output: [
       {

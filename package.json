@@ -32,7 +32,7 @@
   "prettier": "@putdotio/prettier-config",
   "dependencies": {
     "js-cookie": "^2.2.1",
-    "query-string": "^6.9.0",
+    "query-string": "^5.1.1",
     "rxjs": "^6.5.4",
     "uuid": "^3.3.3"
   },
