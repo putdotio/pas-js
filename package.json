@@ -1,6 +1,6 @@
 {
   "name": "@putdotio/pas-js",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "Client-side JS client for Putio Analytics System",
   "keywords": [
     "putio",
