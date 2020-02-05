@@ -62,8 +62,8 @@ describe('Client', () => {
     it('calls api.post with correct params', () => {
       client.alias({ id: 7, hash: 'user_hash' })
       expect(mockAPIPost).toBeCalledWith('/alias', {
-        id: '7',
-        hash: 'user_hash',
+        user_id: '7',
+        user_hash: 'user_hash',
         previous_id: anonymousId,
       })
     })

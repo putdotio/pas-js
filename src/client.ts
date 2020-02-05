@@ -32,8 +32,8 @@ const createClient = ({
     const attributes = user.alias(params)
     api.post('/alias', {
       previous_id: attributes.anonymousId,
-      id: attributes.id,
-      hash: attributes.hash,
+      user_id: attributes.id,
+      user_hash: attributes.hash,
     })
   }
 
