@@ -12,7 +12,10 @@ export interface IPutioAnalyticsClient {
 
 const createClient = ({
   config = {
-    apiURL: 'https://pas.put.io/api',
+    apiURL:
+      process.env.NODE_ENV === 'development'
+        ? 'http://dev.put.io:6060'
+        : 'https://pas.put.io/api',
     cache: {
       domain: '.put.io',
       expires: 365,
