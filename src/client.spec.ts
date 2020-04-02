@@ -1,7 +1,12 @@
-import { IPutioAnalyticsAPI } from '../api'
-import { IPutioAnalyticsCache } from '../cache'
-import createClient, { IPutioAnalyticsClient } from '../client'
-import createUser from '../user'
+import { mock } from 'jest-mock-extended'
+import { IPutioAnalyticsAPI } from './api'
+import { IPutioAnalyticsCache } from './cache'
+import {
+  createClientFactory,
+  createClientFactoryWithDependencies,
+  PutioAnalyticsClient,
+} from './client'
+import createUser from './user'
 
 const anonymousId = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
 jest.mock('uuid/v4', () => jest.fn(() => anonymousId))
@@ -18,39 +23,40 @@ const mockCacheFactory = (): IPutioAnalyticsCache<any> => {
   }
 }
 
-const mockAPIPost = jest.fn()
-const mockAPIFactory = (): IPutioAnalyticsAPI => {
-  return {
-    post: mockAPIPost,
-  }
-}
+const mockAPI = mock<IPutioAnalyticsAPI>()
+const mockAPIFactory = jest.fn(() => mockAPI)
 
 describe('Client', () => {
-  let client: IPutioAnalyticsClient
+  const createClient = createClientFactoryWithDependencies(
+    mockCacheFactory,
+    createUser,
+    mockAPIFactory,
+  )
+
+  let client: PutioAnalyticsClient
 
   afterEach(jest.clearAllMocks)
   beforeEach(() => {
     client = createClient({
-      config: {
-        apiURL: 'https://pas.put.io/api',
-        cache: {
-          domain: '.put.io',
-          expires: 365,
-        },
-      },
-      factories: {
-        createAPI: mockAPIFactory,
-        createCache: mockCacheFactory,
-        createUser,
+      apiURL: 'https://dev.put.io:8000/api',
+      cache: {
+        domain: '.put.io',
+        expires: 365,
       },
     })
   })
 
   it('initializes with default params', () => {
+    expect(createClientFactory()()).toBeTruthy()
     expect(createClient()).toBeTruthy()
   })
 
   it('initializes with given params', () => {
+    expect(mockAPIFactory).toBeCalledWith(
+      'https://dev.put.io:8000/api',
+      mockCacheFactory(),
+    )
+
     expect(mockCacheGet).toBeCalledWith('pas_js_user')
     expect(mockCacheSet).toBeCalledWith(
       'pas_js_user',
@@ -61,7 +67,7 @@ describe('Client', () => {
   describe('alias method', () => {
     it('calls api.post with correct params', () => {
       client.alias({ id: 7, hash: 'user_hash' })
-      expect(mockAPIPost).toBeCalledWith('/alias', {
+      expect(mockAPI.post).toBeCalledWith('/alias', {
         user_id: '7',
         user_hash: 'user_hash',
         previous_id: anonymousId,
@@ -73,7 +79,7 @@ describe('Client', () => {
     it('calls api.post with correct params', () => {
       client.identify({ id: 7, hash: 'user_hash', properties: { foo: 'bar' } })
 
-      expect(mockAPIPost).toBeCalledWith('/users', {
+      expect(mockAPI.post).toBeCalledWith('/users', {
         users: [
           {
             id: '7',
@@ -88,7 +94,7 @@ describe('Client', () => {
   describe('track method', () => {
     it('calls api.post with correct params', () => {
       client.track('event_name')
-      expect(mockAPIPost).toHaveBeenCalledWith('/events', {
+      expect(mockAPI.post).toHaveBeenCalledWith('/events', {
         events: [
           {
             name: 'event_name',
@@ -117,7 +123,7 @@ describe('Client', () => {
       client.alias({ id: 7, hash: 'user_hash' })
       client.pageView()
 
-      expect(mockAPIPost).toHaveBeenNthCalledWith(2, '/events', {
+      expect(mockAPI.post).toHaveBeenNthCalledWith(2, '/events', {
         events: [
           {
             user_id: '7',

@@ -1,5 +1,5 @@
 import xhrMock from 'xhr-mock'
-import createAPI, { IPutioAnalyticsAPIRetryItem } from '../api'
+import createAPI, { IPutioAnalyticsAPIRetryItem } from './api'
 
 const mockUUID = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
 jest.mock('uuid/v4', () => jest.fn(() => mockUUID))

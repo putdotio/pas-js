@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import createCache from '../cache'
+import createCache from './cache'
 
 jest.mock('js-cookie', () => {
   return {
