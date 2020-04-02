@@ -5,16 +5,10 @@ export interface IPutioAnalyticsCacheOptions {
   expires: number
 }
 
-export interface IPutioAnalyticsCache<T> {
-  get: (key: string) => T
-  set: (key: string, value: T) => T
-  clear: (key: string) => void
-}
-
-const createCache = (
+const createCache = <T extends object>(
   options: IPutioAnalyticsCacheOptions,
-): IPutioAnalyticsCache<any> => ({
-  set: (key, value) => {
+) => ({
+  set: (key: string, value: T) => {
     Cookies.set(key, value, {
       expires: options.expires,
       domain: options.domain,
@@ -23,9 +17,11 @@ const createCache = (
     return value
   },
 
-  get: key => Cookies.getJSON(key),
+  get: (key: string) => Cookies.getJSON(key) as T,
 
-  clear: key => Cookies.remove(key, { domain: options.domain }),
+  clear: (key: string) => Cookies.remove(key, { domain: options.domain }),
 })
+
+export type PutioAnalyticsCache = ReturnType<typeof createCache>
 
 export default createCache

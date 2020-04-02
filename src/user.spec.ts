@@ -1,13 +1,11 @@
+import { mock } from 'jest-mock-extended'
+import { PutioAnalyticsCache } from './cache'
 import createUser from './user'
 
 const anonymousId = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
 jest.mock('uuid/v4', () => jest.fn(() => anonymousId))
 
-const mockCache = {
-  get: jest.fn(),
-  set: jest.fn(),
-  clear: jest.fn(),
-}
+const mockCache = mock<PutioAnalyticsCache>()
 
 describe('user utility', () => {
   const CACHE_KEY = 'pas_js_user'

@@ -1,14 +1,12 @@
+import { mock } from 'jest-mock-extended'
 import xhrMock from 'xhr-mock'
-import createAPI, { IPutioAnalyticsAPIRetryItem } from './api'
+import createAPI from './api'
+import { PutioAnalyticsCache } from './cache'
 
 const mockUUID = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
 jest.mock('uuid/v4', () => jest.fn(() => mockUUID))
 
-const mockCache = {
-  get: jest.fn((key: string): IPutioAnalyticsAPIRetryItem[] => []),
-  set: jest.fn((key: string, items: IPutioAnalyticsAPIRetryItem[]) => items),
-  clear: jest.fn(),
-}
+const mockCache = mock<PutioAnalyticsCache>()
 
 describe('api utility', () => {
   const CACHE_KEY = 'pas_js_retry_queue'

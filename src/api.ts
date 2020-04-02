@@ -1,10 +1,7 @@
-import { BehaviorSubject, Observable } from 'rxjs'
-import { ajax, AjaxError, AjaxResponse } from 'rxjs/ajax'
+import { BehaviorSubject } from 'rxjs'
+import { ajax, AjaxError } from 'rxjs/ajax'
 import uuid from 'uuid/v4'
-import { IPutioAnalyticsCache } from './cache'
-export interface IPutioAnalyticsAPI {
-  post: (path: string, body: object) => Observable<AjaxResponse>
-}
+import { PutioAnalyticsCache } from './cache'
 
 export interface IPutioAnalyticsAPIRetryItem {
   id: string
@@ -12,13 +9,11 @@ export interface IPutioAnalyticsAPIRetryItem {
   body: object
 }
 
-const createAPI = (
-  baseURL: string,
-  cache: IPutioAnalyticsCache<IPutioAnalyticsAPIRetryItem[]>,
-): IPutioAnalyticsAPI => {
+const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
   const CACHE_KEY = 'pas_js_retry_queue'
+
   const retryQueue = new BehaviorSubject<IPutioAnalyticsAPIRetryItem[]>(
-    cache.get(CACHE_KEY) || [],
+    (cache.get(CACHE_KEY) || []) as IPutioAnalyticsAPIRetryItem[],
   )
 
   retryQueue.getValue().forEach(retryItem => {
@@ -61,5 +56,7 @@ const createAPI = (
     post,
   }
 }
+
+export type PutioAnalyticsAPI = ReturnType<typeof createAPI>
 
 export default createAPI

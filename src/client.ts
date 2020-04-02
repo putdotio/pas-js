@@ -11,6 +11,8 @@ const defaultConfig = {
   },
 }
 
+export type Config = typeof defaultConfig
+
 export const createClientFactoryWithDependencies = (
   cacheFactory: typeof createCache,
   userFactory: typeof createUser,
@@ -21,7 +23,7 @@ export const createClientFactoryWithDependencies = (
     const user = userFactory(cache)
     const api = apiFactory(config.apiURL, cache)
 
-    const alias = (params: { id: any; hash: string }) => {
+    const alias = (params: { id: string | number; hash: string }) => {
       const attributes = user.alias(params)
       api.post('/alias', {
         previous_id: attributes.anonymousId,
@@ -30,7 +32,11 @@ export const createClientFactoryWithDependencies = (
       })
     }
 
-    const identify = (params: { id: any; hash: string; properties: any }) => {
+    const identify = (params: {
+      id: string | number
+      hash: string
+      properties: Record<string, any>
+    }) => {
       const attributes = user.identify(params)
       api.post('/users', {
         users: [
@@ -43,7 +49,7 @@ export const createClientFactoryWithDependencies = (
       })
     }
 
-    const track = (name: string, properties: object = {}) => {
+    const track = (name: string, properties: Record<string, any> = {}) => {
       const attributes = user.attributes.getValue()
       api.post('/events', {
         events: [

@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
 import uuidv4 from 'uuid/v4'
-import { IPutioAnalyticsCache } from './cache'
+import { PutioAnalyticsCache } from './cache'
 
 export interface IPutioAnalyticsUserAttributes {
   anonymousId: string
@@ -33,9 +33,7 @@ export interface IPutioAnalyticsUser {
   clear: () => IPutioAnalyticsUserAttributes
 }
 
-const createUser = (
-  cache: IPutioAnalyticsCache<IPutioAnalyticsUserAttributes>,
-): IPutioAnalyticsUser => {
+const createUser = (cache: PutioAnalyticsCache): IPutioAnalyticsUser => {
   const CACHE_KEY = 'pas_js_user'
   const attributes = new BehaviorSubject(createAttributes(cache.get(CACHE_KEY)))
 

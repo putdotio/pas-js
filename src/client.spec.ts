@@ -1,6 +1,5 @@
 import { mock } from 'jest-mock-extended'
-import { IPutioAnalyticsAPI } from './api'
-import { IPutioAnalyticsCache } from './cache'
+import { PutioAnalyticsAPI } from './api'
 import {
   createClientFactory,
   createClientFactoryWithDependencies,
@@ -14,7 +13,7 @@ jest.mock('uuid/v4', () => jest.fn(() => anonymousId))
 const mockCacheGet = jest.fn()
 const mockCacheSet = jest.fn()
 const mockCacheClear = jest.fn()
-const mockCacheFactory = (): IPutioAnalyticsCache<any> => {
+const mockCacheFactory = () => {
   const cache = {}
   return {
     get: mockCacheGet.mockImplementation(key => cache[key]),
@@ -23,7 +22,7 @@ const mockCacheFactory = (): IPutioAnalyticsCache<any> => {
   }
 }
 
-const mockAPI = mock<IPutioAnalyticsAPI>()
+const mockAPI = mock<PutioAnalyticsAPI>()
 const mockAPIFactory = jest.fn(() => mockAPI)
 
 describe('Client', () => {
