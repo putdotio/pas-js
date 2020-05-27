@@ -10,7 +10,7 @@ jest.mock('js-cookie', () => {
 })
 
 describe('cache utility', () => {
-  const options = { domain: '.put.io', expires: 365 }
+  const options = { domain: '.put.io', expires: 365, sameSite: 'lax' }
   const cache = createCache(options)
 
   it('calls Cookies.set for saving data to cookies', () => {

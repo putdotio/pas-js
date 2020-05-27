@@ -12,6 +12,7 @@ const createCache = <T extends object>(
     Cookies.set(key, value, {
       expires: options.expires,
       domain: options.domain,
+      sameSite: 'lax',
     })
 
     return value
