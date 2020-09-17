@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { PutioAnalyticsCache } from './cache'
 
 export interface IPutioAnalyticsUserAttributes {
@@ -12,7 +12,7 @@ export interface IPutioAnalyticsUserAttributes {
 const createAttributes = (
   cachedAttributes = {},
 ): IPutioAnalyticsUserAttributes => ({
-  anonymousId: uuid.v4(),
+  anonymousId: uuid(),
   id: undefined,
   hash: undefined,
   properties: {},

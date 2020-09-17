@@ -87,9 +87,8 @@ export const createClientFactoryWithDependencies = (
   }
 }
 
-export const createClientFactory = () => {
-  return createClientFactoryWithDependencies(createCache, createUser, createAPI)
-}
+export const createClientFactory = () =>
+  createClientFactoryWithDependencies(createCache, createUser, createAPI)
 
 export type PutioAnalyticsClient = ReturnType<
   ReturnType<typeof createClientFactory>
