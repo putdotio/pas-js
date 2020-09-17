@@ -17,16 +17,16 @@ describe('user utility', () => {
     expect(user.attributes.getValue()).toMatchInlineSnapshot(`
       Object {
         "anonymousId": "fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14",
-        "hash": null,
-        "id": null,
+        "hash": undefined,
+        "id": undefined,
         "properties": Object {},
       }
     `)
 
     expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
       anonymousId,
-      hash: null,
-      id: null,
+      hash: undefined,
+      id: undefined,
     })
   })
 
@@ -109,16 +109,16 @@ describe('user utility', () => {
     expect(attributes).toMatchInlineSnapshot(`
       Object {
         "anonymousId": "fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14",
-        "hash": null,
-        "id": null,
+        "hash": undefined,
+        "id": undefined,
         "properties": Object {},
       }
     `)
 
     expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, {
       anonymousId: 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14',
-      hash: null,
-      id: null,
+      hash: undefined,
+      id: undefined,
     })
   })
 })

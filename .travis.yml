@@ -1,9 +1,14 @@
 language: node_js
+
 node_js:
-  - '12.13'
+  - "12.13"
+
 script:
-  - npm run build
-  - npm run coveralls
+  - yarn lint
+  - yarn test
+  - yarn build
+  - yarn coveralls
+
 deploy:
   edge: true
   skip_cleanup: true

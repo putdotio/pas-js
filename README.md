@@ -11,6 +11,10 @@ Browser client for [Put.io Analytics System](https://github.com/putdotio/pas)
 ## Installation
 
 ```bash
+yarn add @putdotio/pas-js
+```
+
+```bash
 $ npm install @putdotio/pas-js -S
 ```
 

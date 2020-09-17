@@ -6,15 +6,15 @@ export interface IPutioAnalyticsUserAttributes {
   anonymousId: string
   id?: string
   hash?: string
-  properties?: any
+  properties?: Record<string, unknown>
 }
 
 const createAttributes = (
   cachedAttributes = {},
 ): IPutioAnalyticsUserAttributes => ({
   anonymousId: uuidv4(),
-  id: null,
-  hash: null,
+  id: undefined,
+  hash: undefined,
   properties: {},
   ...cachedAttributes,
 })
@@ -46,12 +46,20 @@ const createUser = (cache: PutioAnalyticsCache): IPutioAnalyticsUser => {
       }),
   })
 
-  const alias = ({ id, hash }) => {
+  const alias = ({ id, hash }: { id: string | number; hash: string }) => {
     attributes.next({ ...attributes.getValue(), id: String(id), hash })
     return attributes.getValue()
   }
 
-  const identify = ({ id, hash, properties }) => {
+  const identify = ({
+    id,
+    hash,
+    properties,
+  }: {
+    id: string | number
+    hash: string
+    properties: Record<string, unknown>
+  }) => {
     attributes.next({
       ...attributes.getValue(),
       id: String(id),

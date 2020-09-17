@@ -14,7 +14,7 @@ const mockCacheGet = jest.fn()
 const mockCacheSet = jest.fn()
 const mockCacheClear = jest.fn()
 const mockCacheFactory = () => {
-  const cache = {}
+  const cache: Record<string, unknown> = {}
   return {
     get: mockCacheGet.mockImplementation(key => cache[key]),
     set: mockCacheSet.mockImplementation((key, value) => (cache[key] = value)),
@@ -98,7 +98,7 @@ describe('Client', () => {
           {
             name: 'event_name',
             user_id: anonymousId,
-            user_hash: null,
+            user_hash: undefined,
             properties: {},
           },
         ],
@@ -148,8 +148,8 @@ describe('Client', () => {
       client.clear()
       expect(mockCacheSet).toBeCalledWith('pas_js_user', {
         anonymousId,
-        id: null,
-        hash: null,
+        id: undefined,
+        hash: undefined,
       })
     })
   })
