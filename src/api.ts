@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
 import { ajax, AjaxError } from 'rxjs/ajax'
-import uuid from 'uuid/v4'
+import uuid from 'uuid'
 import { PutioAnalyticsCache } from './cache'
 
 export interface IPutioAnalyticsAPIRetryItem {
@@ -39,7 +39,7 @@ const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
       error: e => {
         if (e instanceof AjaxError && (e.status > 500 || e.status === 0)) {
           const retryItem = {
-            id: uuid(),
+            id: uuid.v4(),
             path,
             body,
           }
