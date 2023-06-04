@@ -1,12 +1,20 @@
-# `@putdotio/pas-js`
+<div align="center">
+  <p>
+    <img src="https://static.put.io/images/putio-boncuk.png" width="72">
+  </p>
 
-[![Build Status](https://travis-ci.org/putdotio/pas-js.svg?branch=master)](https://travis-ci.org/putdotio/pas-js)
-[![Coverage Status](https://coveralls.io/repos/github/putdotio/pas-js/badge.svg?branch=master)](https://coveralls.io/github/putdotio/pas-js?branch=master)
-![npm (scoped)](https://img.shields.io/npm/v/@putdotio/pas-js)
-![npm bundle size (scoped)](https://img.shields.io/bundlephobia/minzip/@putdotio/pas-js)
-![GitHub](https://img.shields.io/github/license/putdotio/pas-js)
+  <h1>pas-js</h1>
 
-Browser client for [Put.io Analytics System](https://github.com/putdotio/pas)
+  <p>
+    JavaScript SDK for <a href="https://github.com/putdotio/pas">put.io Analytics System.</a>
+  </p>
+
+<p><a href="https://travis-ci.org/putdotio/pas-js"><img src="https://travis-ci.org/putdotio/pas-js.svg?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/github/putdotio/pas-js?branch=master"><img src="https://coveralls.io/repos/github/putdotio/pas-js/badge.svg?branch=master" alt="Coverage Status"></a>
+<img src="https://img.shields.io/npm/v/@putdotio/pas-js" alt="npm (scoped)">
+<img src="https://img.shields.io/bundlephobia/minzip/@putdotio/pas-js" alt="npm bundle size (scoped)">
+<img src="https://img.shields.io/github/license/putdotio/pas-js" alt="GitHub"></p>
+</div>
 
 ## Installation
 
