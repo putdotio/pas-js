@@ -1,95 +1,95 @@
-import queryString from 'query-string'
-import createAPI from './api'
-import createCache from './cache'
-import createUser from './user'
+import queryString from "query-string";
+import createAPI from "./api";
+import createCache from "./cache";
+import createUser from "./user";
 
 const defaultConfig = {
-  apiURL: 'https://pas.put.io/api',
+  apiURL: "https://pas.put.io/api",
   cache: {
-    domain: '.put.io',
+    domain: ".put.io",
     expires: 365,
   },
-}
+};
 
-export type Config = typeof defaultConfig
+export type Config = typeof defaultConfig;
 
-export const createClientFactoryWithDependencies = (
-  cacheFactory: typeof createCache,
-  userFactory: typeof createUser,
-  apiFactory: typeof createAPI,
-) => (config = defaultConfig) => {
-  const cache = cacheFactory(config.cache)
-  const user = userFactory(cache)
-  const api = apiFactory(config.apiURL, cache)
+export const createClientFactoryWithDependencies =
+  (
+    cacheFactory: typeof createCache,
+    userFactory: typeof createUser,
+    apiFactory: typeof createAPI,
+  ) =>
+  (config = defaultConfig) => {
+    const cache = cacheFactory(config.cache);
+    const user = userFactory(cache);
+    const api = apiFactory(config.apiURL, cache);
 
-  const alias = (params: { id: string | number; hash: string }) => {
-    const attributes = user.alias(params)
-    api.post('/alias', {
-      previous_id: attributes.anonymousId,
-      user_id: attributes.id,
-      user_hash: attributes.hash,
-    })
-  }
+    const alias = (params: { id: string | number; hash: string }) => {
+      const attributes = user.alias(params);
+      api.post("/alias", {
+        previous_id: attributes.anonymousId,
+        user_id: attributes.id,
+        user_hash: attributes.hash,
+      });
+    };
 
-  const identify = (params: {
-    id: string | number
-    hash: string
-    properties: Record<string, any>
-  }) => {
-    const attributes = user.identify(params)
-    api.post('/users', {
-      users: [
-        {
-          id: attributes.id,
-          hash: attributes.hash,
-          properties: attributes.properties,
-        },
-      ],
-    })
-  }
+    const identify = (params: {
+      id: string | number;
+      hash: string;
+      properties: Record<string, unknown>;
+    }) => {
+      const attributes = user.identify(params);
+      api.post("/users", {
+        users: [
+          {
+            id: attributes.id,
+            hash: attributes.hash,
+            properties: attributes.properties,
+          },
+        ],
+      });
+    };
 
-  const track = (name: string, properties: Record<string, any> = {}) => {
-    const attributes = user.attributes.getValue()
-    api.post('/events', {
-      events: [
-        {
-          user_id: attributes.id || attributes.anonymousId,
-          user_hash: attributes.hash,
-          name,
-          properties,
-        },
-      ],
-    })
-  }
+    const track = (name: string, properties: Record<string, unknown> = {}) => {
+      const attributes = user.attributes.getValue();
+      api.post("/events", {
+        events: [
+          {
+            user_id: attributes.id || attributes.anonymousId,
+            user_hash: attributes.hash,
+            name,
+            properties,
+          },
+        ],
+      });
+    };
 
-  const pageView = () => {
-    const { search, origin, pathname } = window.location
-    const { utm_source, utm_medium, utm_campaign } = queryString.parse(search)
+    const pageView = () => {
+      const { search, origin, pathname } = window.location;
+      const { utm_source, utm_medium, utm_campaign } = queryString.parse(search);
 
-    return track('page_viewed', {
-      domain: origin,
-      path: pathname,
-      referrer: document.referrer,
-      utm_source,
-      utm_medium,
-      utm_campaign,
-    })
-  }
+      return track("page_viewed", {
+        domain: origin,
+        path: pathname,
+        referrer: document.referrer,
+        utm_source,
+        utm_medium,
+        utm_campaign,
+      });
+    };
 
-  const clear = () => user.clear()
+    const clear = () => user.clear();
 
-  return {
-    alias,
-    identify,
-    track,
-    pageView,
-    clear,
-  }
-}
+    return {
+      alias,
+      identify,
+      track,
+      pageView,
+      clear,
+    };
+  };
 
 export const createClientFactory = () =>
-  createClientFactoryWithDependencies(createCache, createUser, createAPI)
+  createClientFactoryWithDependencies(createCache, createUser, createAPI);
 
-export type PutioAnalyticsClient = ReturnType<
-  ReturnType<typeof createClientFactory>
->
+export type PutioAnalyticsClient = ReturnType<ReturnType<typeof createClientFactory>>;

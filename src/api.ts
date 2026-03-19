@@ -1,62 +1,62 @@
-import { BehaviorSubject } from 'rxjs'
-import { ajax, AjaxError } from 'rxjs/ajax'
-import { v4 as uuid } from 'uuid'
-import { PutioAnalyticsCache } from './cache'
+import { BehaviorSubject } from "rxjs";
+import { ajax, AjaxError } from "rxjs/ajax/index.js";
+import { v4 as uuid } from "uuid";
+import type { PutioAnalyticsCache } from "./cache";
 
 export interface IPutioAnalyticsAPIRetryItem {
-  id: string
-  path: string
-  body: object
+  id: string;
+  path: string;
+  body: object;
 }
 
 const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
-  const CACHE_KEY = 'pas_js_retry_queue'
+  const CACHE_KEY = "pas_js_retry_queue";
 
   const retryQueue = new BehaviorSubject<IPutioAnalyticsAPIRetryItem[]>(
     (cache.get(CACHE_KEY) || []) as IPutioAnalyticsAPIRetryItem[],
-  )
+  );
 
-  retryQueue.getValue().forEach(retryItem => {
-    const next = retryQueue.getValue().filter(i => i.id !== retryItem.id)
-    retryQueue.next(next)
-    post(retryItem.path, retryItem.body)
-  })
+  retryQueue.getValue().forEach((retryItem) => {
+    const next = retryQueue.getValue().filter((item) => item.id !== retryItem.id);
+    retryQueue.next(next);
+    post(retryItem.path, retryItem.body);
+  });
 
   retryQueue.subscribe({
-    next: v => cache.set(CACHE_KEY, v),
-  })
+    next: (value) => cache.set(CACHE_KEY, value),
+  });
 
   function post(path: string, body: object) {
     const request = ajax({
       url: `${baseURL}${path}`,
-      method: 'POST',
+      method: "POST",
       body,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       timeout: 3000,
-    })
+    });
 
     request.subscribe({
-      error: e => {
-        if (e instanceof AjaxError && (e.status > 500 || e.status === 0)) {
+      error: (error) => {
+        if (error instanceof AjaxError && (error.status > 500 || error.status === 0)) {
           const retryItem = {
             id: uuid(),
             path,
             body,
-          }
+          };
 
-          retryQueue.next([...retryQueue.getValue(), retryItem])
+          retryQueue.next([...retryQueue.getValue(), retryItem]);
         }
       },
-    })
+    });
 
-    return request
+    return request;
   }
 
   return {
     post,
-  }
-}
+  };
+};
 
-export type PutioAnalyticsAPI = ReturnType<typeof createAPI>
+export type PutioAnalyticsAPI = ReturnType<typeof createAPI>;
 
-export default createAPI
+export default createAPI;

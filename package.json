@@ -1,43 +1,52 @@
 {
   "name": "@putdotio/pas-js",
   "version": "2.9.0",
-  "description": "Client-side JS client for Putio Analytics System",
+  "description": "Browser analytics client for the put.io Analytics System.",
   "keywords": [
-    "putio",
+    "analytics",
+    "pas",
     "put.io",
-    "Putio Analytics System"
+    "putio"
   ],
-  "main": "dist/index.js",
-  "module": "dist/pas-js.esm.js",
-  "typings": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src"
-  ],
-  "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "coveralls": "tsdx test --coverage && cat ./coverage/lcov.info | coveralls"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
-  "author": "Put.io <devs@put.io>",
-  "license": "MIT",
   "homepage": "https://github.com/putdotio/pas-js",
+  "bugs": {
+    "url": "https://github.com/putdotio/pas-js/issues"
+  },
+  "license": "MIT",
+  "author": "put.io <ui@put.io>",
   "repository": {
     "type": "git",
     "url": "https://github.com/putdotio/pas-js.git"
   },
-  "bugs": {
-    "url": "https://github.com/putdotio/pas-js/issues"
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    }
   },
-  "prettier": "@putdotio/prettier-config",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "check": "vp check .",
+    "clean": "rm -rf coverage dist",
+    "coverage": "vp test --coverage",
+    "dev": "vp pack --watch",
+    "prepack": "vp pack",
+    "test": "vp test",
+    "verify": "vp check . && vp pack && vp test && vp test --coverage"
+  },
   "dependencies": {
     "js-cookie": "^2.2.1",
     "query-string": "^5.1.1",
@@ -47,17 +56,25 @@
   "devDependencies": {
     "@putdotio/prettier-config": "^1.0.0",
     "@types/js-cookie": "^2.2.4",
+    "@types/node": "^24.0.0",
     "@types/query-string": "^5",
     "@types/uuid": "^8.3.0",
-    "coveralls": "^3.1.0",
-    "husky": "^4.2.5",
-    "jest-mock-extended": "^1.0.10",
-    "tsdx": "^0.13.2",
-    "tslib": "^2.0.1",
-    "typescript": "^4.0.2",
+    "@vitest/coverage-v8": "4.1.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.3",
+    "vite-plus": "^0.1.12",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.12",
     "xhr-mock": "^2.5.1"
   },
-  "publishConfig": {
-    "access": "public"
+  "prettier": "@putdotio/prettier-config",
+  "engines": {
+    "node": ">=24.14.0 <25"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:@voidzero-dev/vite-plus-core@0.1.12",
+      "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.12"
+    }
   }
 }

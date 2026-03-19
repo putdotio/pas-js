@@ -1,86 +1,81 @@
-import { BehaviorSubject } from 'rxjs'
-import { v4 as uuid } from 'uuid'
-import { PutioAnalyticsCache } from './cache'
+import { BehaviorSubject } from "rxjs";
+import { v4 as uuid } from "uuid";
+import type { PutioAnalyticsCache } from "./cache";
 
 export interface IPutioAnalyticsUserAttributes {
-  anonymousId: string
-  id?: string
-  hash?: string
-  properties?: Record<string, unknown>
+  anonymousId: string;
+  id?: string;
+  hash?: string;
+  properties?: Record<string, unknown>;
 }
 
-const createAttributes = (
-  cachedAttributes = {},
-): IPutioAnalyticsUserAttributes => ({
+const createAttributes = (cachedAttributes = {}): IPutioAnalyticsUserAttributes => ({
   anonymousId: uuid(),
   id: undefined,
   hash: undefined,
   properties: {},
   ...cachedAttributes,
-})
+});
 
 export interface IPutioAnalyticsUser {
-  attributes: BehaviorSubject<IPutioAnalyticsUserAttributes>
-  alias: (params: {
-    id: string | number
-    hash: string
-  }) => IPutioAnalyticsUserAttributes
+  attributes: BehaviorSubject<IPutioAnalyticsUserAttributes>;
+  alias: (params: { id: string | number; hash: string }) => IPutioAnalyticsUserAttributes;
   identify: (params: {
-    id: string | number
-    hash: string
-    properties: any
-  }) => IPutioAnalyticsUserAttributes
-  clear: () => IPutioAnalyticsUserAttributes
+    id: string | number;
+    hash: string;
+    properties: Record<string, unknown>;
+  }) => IPutioAnalyticsUserAttributes;
+  clear: () => IPutioAnalyticsUserAttributes;
 }
 
 const createUser = (cache: PutioAnalyticsCache): IPutioAnalyticsUser => {
-  const CACHE_KEY = 'pas_js_user'
-  const attributes = new BehaviorSubject(createAttributes(cache.get(CACHE_KEY)))
+  const CACHE_KEY = "pas_js_user";
+  const attributes = new BehaviorSubject(createAttributes(cache.get(CACHE_KEY)));
 
   attributes.subscribe({
-    next: nextAttributes =>
+    next: (nextAttributes) =>
       cache.set(CACHE_KEY, {
         id: nextAttributes.id,
         anonymousId: nextAttributes.anonymousId,
         hash: nextAttributes.hash,
       }),
-  })
+  });
 
   const alias = ({ id, hash }: { id: string | number; hash: string }) => {
-    attributes.next({ ...attributes.getValue(), id: String(id), hash })
-    return attributes.getValue()
-  }
+    attributes.next({ ...attributes.getValue(), id: String(id), hash });
+    return attributes.getValue();
+  };
 
   const identify = ({
     id,
     hash,
     properties,
   }: {
-    id: string | number
-    hash: string
-    properties: Record<string, unknown>
+    id: string | number;
+    hash: string;
+    properties: Record<string, unknown>;
   }) => {
     attributes.next({
       ...attributes.getValue(),
       id: String(id),
       hash,
       properties,
-    })
+    });
 
-    return attributes.getValue()
-  }
+    return attributes.getValue();
+  };
 
   const clear = () => {
-    attributes.next(createAttributes())
-    return attributes.getValue()
-  }
+    attributes.next(createAttributes());
+    return attributes.getValue();
+  };
 
   return {
     attributes,
     alias,
     identify,
     clear,
-  }
-}
+  };
+};
 
-export default createUser
+export default createUser;

@@ -1,156 +1,154 @@
-import { mock } from 'jest-mock-extended'
-import { PutioAnalyticsAPI } from './api'
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import type { PutioAnalyticsAPI } from "./api";
 import {
   createClientFactory,
   createClientFactoryWithDependencies,
-  PutioAnalyticsClient,
-} from './client'
-import createUser from './user'
+  type PutioAnalyticsClient,
+} from "./client";
+import createUser from "./user";
 
-const anonymousId = 'fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14'
-jest.mock('uuid', () => ({ v4: jest.fn(() => anonymousId) }))
+const anonymousId = "fcdfa284-6ce1-47b4-b2d4-1d5186fc6f14";
 
-const mockCacheGet = jest.fn()
-const mockCacheSet = jest.fn()
-const mockCacheClear = jest.fn()
+vi.mock("uuid", () => ({ v4: vi.fn(() => anonymousId) }));
+
+const mockCacheGet = vi.fn();
+const mockCacheSet = vi.fn();
+const mockCacheClear = vi.fn();
+
 const mockCacheFactory = () => {
-  const cache: Record<string, unknown> = {}
+  const cache: Record<string, unknown> = {};
+
   return {
-    get: mockCacheGet.mockImplementation(key => cache[key]),
-    set: mockCacheSet.mockImplementation((key, value) => (cache[key] = value)),
-    clear: mockCacheClear.mockImplementation(key => delete cache[key]),
-  }
-}
+    clear: mockCacheClear.mockImplementation((key: string) => delete cache[key]),
+    get: mockCacheGet.mockImplementation((key: string) => cache[key]),
+    set: mockCacheSet.mockImplementation((key: string, value: unknown) => (cache[key] = value)),
+  };
+};
 
-const mockAPI = mock<PutioAnalyticsAPI>()
-const mockAPIFactory = jest.fn(() => mockAPI)
+const mockAPI: PutioAnalyticsAPI = {
+  post: vi.fn(),
+};
+const mockAPIFactory = vi.fn(() => mockAPI);
 
-describe('Client', () => {
+describe("Client", () => {
   const createClient = createClientFactoryWithDependencies(
-    mockCacheFactory,
+    mockCacheFactory as never,
     createUser,
     mockAPIFactory,
-  )
+  );
 
-  let client: PutioAnalyticsClient
+  let client: PutioAnalyticsClient;
 
-  afterEach(jest.clearAllMocks)
   beforeEach(() => {
+    window.history.replaceState(
+      {},
+      "",
+      "/files?utm_source=UTM_SOURCE&utm_medium=UTM_MEDIUM&utm_campaign=UTM_CAMPAIGN",
+    );
+
     client = createClient({
-      apiURL: 'https://dev.put.io:8000/api',
+      apiURL: "https://dev.put.io:8000/api",
       cache: {
-        domain: '.put.io',
+        domain: ".put.io",
         expires: 365,
       },
-    })
-  })
+    });
+  });
 
-  it('initializes with default params', () => {
-    expect(createClientFactory()()).toBeTruthy()
-    expect(createClient()).toBeTruthy()
-  })
+  afterEach(() => {
+    vi.clearAllMocks();
+    window.history.replaceState({}, "", "/");
+  });
 
-  it('initializes with given params', () => {
-    expect(mockAPIFactory).toBeCalledWith(
-      'https://dev.put.io:8000/api',
-      mockCacheFactory(),
-    )
+  it("initializes with default params", () => {
+    expect(createClientFactory()()).toBeTruthy();
+    expect(createClient()).toBeTruthy();
+  });
 
-    expect(mockCacheGet).toBeCalledWith('pas_js_user')
-    expect(mockCacheSet).toBeCalledWith(
-      'pas_js_user',
+  it("initializes with given params", () => {
+    expect(mockAPIFactory).toHaveBeenCalledWith(
+      "https://dev.put.io:8000/api",
+      expect.objectContaining({
+        clear: expect.any(Function),
+        get: expect.any(Function),
+        set: expect.any(Function),
+      }),
+    );
+
+    expect(mockCacheGet).toHaveBeenCalledWith("pas_js_user");
+    expect(mockCacheSet).toHaveBeenCalledWith(
+      "pas_js_user",
       expect.objectContaining({ anonymousId }),
-    )
-  })
+    );
+  });
 
-  describe('alias method', () => {
-    it('calls api.post with correct params', () => {
-      client.alias({ id: 7, hash: 'user_hash' })
-      expect(mockAPI.post).toBeCalledWith('/alias', {
-        user_id: '7',
-        user_hash: 'user_hash',
-        previous_id: anonymousId,
-      })
-    })
-  })
+  it("calls api.post with correct params for alias", () => {
+    client.alias({ id: 7, hash: "user_hash" });
+    expect(mockAPI.post).toHaveBeenCalledWith("/alias", {
+      previous_id: anonymousId,
+      user_hash: "user_hash",
+      user_id: "7",
+    });
+  });
 
-  describe('identify method', () => {
-    it('calls api.post with correct params', () => {
-      client.identify({ id: 7, hash: 'user_hash', properties: { foo: 'bar' } })
+  it("calls api.post with correct params for identify", () => {
+    client.identify({ id: 7, hash: "user_hash", properties: { foo: "bar" } });
 
-      expect(mockAPI.post).toBeCalledWith('/users', {
-        users: [
-          {
-            id: '7',
-            hash: 'user_hash',
-            properties: { foo: 'bar' },
-          },
-        ],
-      })
-    })
-  })
-
-  describe('track method', () => {
-    it('calls api.post with correct params', () => {
-      client.track('event_name')
-      expect(mockAPI.post).toHaveBeenCalledWith('/events', {
-        events: [
-          {
-            name: 'event_name',
-            user_id: anonymousId,
-            user_hash: undefined,
-            properties: {},
-          },
-        ],
-      })
-    })
-  })
-
-  describe('pageView method', () => {
-    it('calls track with correct params', () => {
-      window = Object.create(window)
-      Object.defineProperty(window, 'location', {
-        value: {
-          origin: 'https://app.put.io',
-          pathname: '/files',
-          search:
-            '?utm_source=UTM_SOURCE&utm_medium=UTM_MEDIUM&utm_campaign=UTM_CAMPAIGN',
+    expect(mockAPI.post).toHaveBeenCalledWith("/users", {
+      users: [
+        {
+          hash: "user_hash",
+          id: "7",
+          properties: { foo: "bar" },
         },
-        writable: true,
-      })
+      ],
+    });
+  });
 
-      client.alias({ id: 7, hash: 'user_hash' })
-      client.pageView()
+  it("calls api.post with correct params for track", () => {
+    client.track("event_name");
+    expect(mockAPI.post).toHaveBeenCalledWith("/events", {
+      events: [
+        {
+          name: "event_name",
+          properties: {},
+          user_hash: undefined,
+          user_id: anonymousId,
+        },
+      ],
+    });
+  });
 
-      expect(mockAPI.post).toHaveBeenNthCalledWith(2, '/events', {
-        events: [
-          {
-            user_id: '7',
-            user_hash: 'user_hash',
-            name: 'page_viewed',
-            properties: {
-              domain: 'https://app.put.io',
-              path: '/files',
-              referrer: '',
-              utm_campaign: 'UTM_CAMPAIGN',
-              utm_medium: 'UTM_MEDIUM',
-              utm_source: 'UTM_SOURCE',
-            },
+  it("calls track with correct params for pageView", () => {
+    client.alias({ id: 7, hash: "user_hash" });
+    client.pageView();
+
+    expect(mockAPI.post).toHaveBeenNthCalledWith(2, "/events", {
+      events: [
+        {
+          name: "page_viewed",
+          properties: {
+            domain: "https://app.put.io",
+            path: "/files",
+            referrer: "",
+            utm_campaign: "UTM_CAMPAIGN",
+            utm_medium: "UTM_MEDIUM",
+            utm_source: "UTM_SOURCE",
           },
-        ],
-      })
-    })
-  })
+          user_hash: "user_hash",
+          user_id: "7",
+        },
+      ],
+    });
+  });
 
-  describe('clear method', () => {
-    it('calls user.clear', () => {
-      client.alias({ id: 7, hash: 'user_hash' })
-      client.clear()
-      expect(mockCacheSet).toBeCalledWith('pas_js_user', {
-        anonymousId,
-        id: undefined,
-        hash: undefined,
-      })
-    })
-  })
-})
+  it("clears cached user state", () => {
+    client.alias({ id: 7, hash: "user_hash" });
+    client.clear();
+    expect(mockCacheSet).toHaveBeenCalledWith("pas_js_user", {
+      anonymousId,
+      hash: undefined,
+      id: undefined,
+    });
+  });
+});

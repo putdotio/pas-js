@@ -1,4 +1,6 @@
-import { createClientFactory } from './client'
-export { Config } from './client'
+import { createClientFactory } from "./client";
 
-export default createClientFactory()
+const createPasClient = createClientFactory();
+
+export default createPasClient;
+export type { Config, PutioAnalyticsClient } from "./client";

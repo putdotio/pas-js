@@ -1,30 +1,42 @@
-import Cookies from 'js-cookie'
-import createCache from './cache'
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import Cookies from "js-cookie";
+import createCache from "./cache";
 
-jest.mock('js-cookie', () => {
-  return {
-    set: jest.fn(),
-    getJSON: jest.fn(),
-    remove: jest.fn(),
-  }
-})
+vi.mock("js-cookie", () => ({
+  default: {
+    getJSON: vi.fn(),
+    remove: vi.fn(),
+    set: vi.fn(),
+  },
+}));
 
-describe('cache utility', () => {
-  const options = { domain: '.put.io', expires: 365, sameSite: 'lax' }
-  const cache = createCache(options)
+describe("cache utility", () => {
+  const options = { domain: ".put.io", expires: 365 };
+  const cache = createCache(options);
 
-  it('calls Cookies.set for saving data to cookies', () => {
-    cache.set('key', { foo: 'bar' })
-    expect(Cookies.set).toBeCalledWith('key', { foo: 'bar' }, options)
-  })
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-  it('calls Cookies.getJSON for reading data from cookies', () => {
-    cache.get('key')
-    expect(Cookies.getJSON).toBeCalledWith('key')
-  })
+  it("calls Cookies.set for saving data to cookies", () => {
+    cache.set("key", { foo: "bar" });
+    expect(Cookies.set).toHaveBeenCalledWith(
+      "key",
+      { foo: "bar" },
+      {
+        ...options,
+        sameSite: "lax",
+      },
+    );
+  });
 
-  it('calls Cookes.remove to remove data from cookies', () => {
-    cache.clear('key')
-    expect(Cookies.remove).toBeCalledWith('key', { domain: options.domain })
-  })
-})
+  it("calls Cookies.getJSON for reading data from cookies", () => {
+    cache.get("key");
+    expect(Cookies.getJSON).toHaveBeenCalledWith("key");
+  });
+
+  it("calls Cookies.remove to remove data from cookies", () => {
+    cache.clear("key");
+    expect(Cookies.remove).toHaveBeenCalledWith("key", { domain: options.domain });
+  });
+});
