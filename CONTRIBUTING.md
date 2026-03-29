@@ -4,10 +4,11 @@ Thanks for contributing to `@putdotio/pas-js`
 
 ## Setup
 
-Install dependencies with Vite+:
+Install dependencies with Vite+ and wire the stock Git hooks:
 
 ```bash
 vp install
+vp config
 ```
 
 ## Validation
@@ -19,6 +20,16 @@ vp run verify
 ```
 
 That command runs formatting, linting, package build, unit tests, and coverage using the same entrypoint CI relies on.
+
+## Publication Smoke
+
+Run the packed-consumer smoke when you want release-surface proof beyond unit coverage:
+
+```bash
+vp run test:consumer
+```
+
+That command packs the repo, installs the tarball into a temp project, type-checks the public API, verifies runtime import, and confirms internal package paths stay private.
 
 ## Development Notes
 

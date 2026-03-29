@@ -45,6 +45,7 @@
     "dev": "vp pack --watch",
     "prepack": "vp pack",
     "test": "vp test",
+    "test:consumer": "vp pack && node ./scripts/consumer-smoke.mjs",
     "verify": "vp check . && vp pack && vp test && vp test --coverage"
   },
   "dependencies": {
