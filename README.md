@@ -8,9 +8,9 @@
   <p>Browser analytics client for the put.io Analytics System.</p>
 
   <p>
-    <a href="https://github.com/putdotio/pas-js/actions/workflows/ci.yml?query=branch%3Amaster" style="text-decoration:none;"><img src="https://img.shields.io/github/actions/workflow/status/putdotio/pas-js/ci.yml?branch=master&style=flat&label=ci&colorA=000000&colorB=000000" alt="CI"></a>
+    <a href="https://github.com/putdotio/pas-js/actions/workflows/ci.yml?query=branch%3Amain" style="text-decoration:none;"><img src="https://img.shields.io/github/actions/workflow/status/putdotio/pas-js/ci.yml?branch=main&style=flat&label=ci&colorA=000000&colorB=000000" alt="CI"></a>
     <a href="https://www.npmjs.com/package/@putdotio/pas-js" style="text-decoration:none;"><img src="https://img.shields.io/npm/v/%40putdotio%2Fpas-js?style=flat&colorA=000000&colorB=000000" alt="npm version"></a>
-    <a href="https://github.com/putdotio/pas-js/blob/master/LICENSE" style="text-decoration:none;"><img src="https://img.shields.io/github/license/putdotio/pas-js?style=flat&colorA=000000&colorB=000000" alt="license"></a>
+    <a href="https://github.com/putdotio/pas-js/blob/main/LICENSE" style="text-decoration:none;"><img src="https://img.shields.io/github/license/putdotio/pas-js?style=flat&colorA=000000&colorB=000000" alt="license"></a>
   </p>
 </div>
 
