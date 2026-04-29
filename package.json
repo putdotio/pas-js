@@ -60,11 +60,10 @@
     "@types/node": "^24.0.0",
     "@types/query-string": "^5",
     "@types/uuid": "^8.3.0",
-    "@vitest/coverage-v8": "4.1.0",
+    "@vitest/coverage-v8": "4.1.5",
     "jsdom": "^26.1.0",
     "typescript": "^5.9.3",
-    "vite-plus": "^0.1.14",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.14",
+    "vite-plus": "^0.1.20",
     "xhr-mock": "^2.5.1"
   },
   "prettier": "@putdotio/prettier-config",
