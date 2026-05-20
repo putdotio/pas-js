@@ -25,9 +25,6 @@ importers:
         specifier: ^8.3.0
         version: 8.3.2
     devDependencies:
-      '@putdotio/prettier-config':
-        specifier: ^1.0.0
-        version: 1.0.0
       '@types/js-cookie':
         specifier: ^2.2.4
         version: 2.2.7
@@ -421,9 +418,6 @@ packages:
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
-
-  '@putdotio/prettier-config@1.0.0':
-    resolution: {integrity: sha512-F6W0z4ExAFJnLCnujwPp7z/3ZgZcc7SmN0ddhtcz4mPulsreURtfRERa+6eXoOsuI/DxdgwtUX625omag1NLoQ==}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.10':
     resolution: {integrity: sha512-jOHxwXhxmFKuXztiu1ORieJeTbx5vrTkcOkkkn2d35726+iwhrY1w/+nYY/AGgF12thg33qC3R1LMBF5tHTZHg==}
@@ -1594,8 +1588,6 @@ snapshots:
     optional: true
 
   '@polka/url@1.0.0-next.29': {}
-
-  '@putdotio/prettier-config@1.0.0': {}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.10':
     optional: true
