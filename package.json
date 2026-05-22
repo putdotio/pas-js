@@ -62,11 +62,11 @@
     "@vitest/coverage-v8": "4.1.7",
     "jsdom": "^26.1.0",
     "typescript": "^5.9.3",
-    "vite-plus": "^0.1.20",
+    "vite-plus": "^0.1.22",
     "xhr-mock": "^2.5.1"
   },
   "engines": {
     "node": ">=24.14.0"
   },
-  "packageManager": "pnpm@11.0.0"
+  "packageManager": "pnpm@11.2.2"
 }
