@@ -41,12 +41,12 @@
     "build": "vp pack",
     "check": "vp check .",
     "clean": "rm -rf coverage dist",
-    "coverage": "vp test --coverage",
+    "coverage": "vp test run --coverage",
     "dev": "vp pack --watch",
     "prepack": "vp pack",
     "test": "vp test",
     "test:consumer": "vp pack && node ./scripts/consumer-smoke.mjs",
-    "verify": "vp check . && vp pack && vp test && vp test --coverage"
+    "verify": "vp check . && vp pack && vp test && vp test run --coverage"
   },
   "dependencies": {
     "js-cookie": "^2.2.1",
@@ -59,10 +59,11 @@
     "@types/node": "^24.0.0",
     "@types/query-string": "^5",
     "@types/uuid": "^8.3.0",
-    "@vitest/coverage-v8": "4.1.7",
+    "@vitest/coverage-v8": "4.1.9",
     "jsdom": "^26.1.0",
     "typescript": "^5.9.3",
-    "vite-plus": "^0.1.22",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.1",
+    "vite-plus": "^0.2.1",
     "xhr-mock": "^2.5.1"
   },
   "engines": {
