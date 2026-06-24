@@ -4,7 +4,7 @@ import createCache from "./cache";
 
 vi.mock("js-cookie", () => ({
   default: {
-    getJSON: vi.fn(),
+    get: vi.fn(),
     remove: vi.fn(),
     set: vi.fn(),
   },
@@ -20,19 +20,24 @@ describe("cache utility", () => {
 
   it("calls Cookies.set for saving data to cookies", () => {
     cache.set("key", { foo: "bar" });
-    expect(Cookies.set).toHaveBeenCalledWith(
-      "key",
-      { foo: "bar" },
-      {
-        ...options,
-        sameSite: "lax",
-      },
-    );
+    expect(Cookies.set).toHaveBeenCalledWith("key", JSON.stringify({ foo: "bar" }), {
+      ...options,
+      sameSite: "lax",
+    });
   });
 
-  it("calls Cookies.getJSON for reading data from cookies", () => {
-    cache.get("key");
-    expect(Cookies.getJSON).toHaveBeenCalledWith("key");
+  it("reads and parses cookie data", () => {
+    vi.mocked(Cookies.get).mockReturnValue(JSON.stringify({ foo: "bar" }));
+    expect(cache.get("key")).toEqual({ foo: "bar" });
+    expect(Cookies.get).toHaveBeenCalledWith("key");
+  });
+
+  it("returns undefined when cookie data is absent or invalid", () => {
+    vi.mocked(Cookies.get).mockReturnValue(undefined);
+    expect(cache.get("key")).toBeUndefined();
+
+    vi.mocked(Cookies.get).mockReturnValue("not json");
+    expect(cache.get("key")).toBeUndefined();
   });
 
   it("calls Cookies.remove to remove data from cookies", () => {

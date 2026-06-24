@@ -5,9 +5,21 @@ export interface IPutioAnalyticsCacheOptions {
   expires: number;
 }
 
+const parseCookieValue = <T extends object>(value: string | undefined) => {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return undefined;
+  }
+};
+
 const createCache = <T extends object>(options: IPutioAnalyticsCacheOptions) => ({
   set: (key: string, value: T) => {
-    Cookies.set(key, value, {
+    Cookies.set(key, JSON.stringify(value), {
       expires: options.expires,
       domain: options.domain,
       sameSite: "lax",
@@ -16,7 +28,7 @@ const createCache = <T extends object>(options: IPutioAnalyticsCacheOptions) => 
     return value;
   },
 
-  get: (key: string) => Cookies.getJSON(key) as T,
+  get: (key: string) => parseCookieValue<T>(Cookies.get(key)),
 
   clear: (key: string) => Cookies.remove(key, { domain: options.domain }),
 });
