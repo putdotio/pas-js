@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { ajax, AjaxError } from "rxjs/ajax/index.js";
+import { ajax, AjaxError } from "rxjs/ajax";
 import { v4 as uuid } from "uuid";
 import type { PutioAnalyticsCache } from "./cache";
 
