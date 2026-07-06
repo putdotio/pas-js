@@ -50,18 +50,18 @@
   },
   "dependencies": {
     "js-cookie": "^3.0.8",
-    "query-string": "^9.4.0",
+    "query-string": "^9.4.1",
     "rxjs": "^7.8.2",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.1.0",
     "@vitest/coverage-v8": "4.1.9",
     "jsdom": "^29.1.1",
     "typescript": "^6.0.3",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.1",
-    "vite-plus": "^0.2.1",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2",
+    "vite-plus": "0.2.2",
     "xhr-mock": "^2.5.1"
   },
   "engines": {
