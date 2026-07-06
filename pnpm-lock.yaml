@@ -4,8 +4,18 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@vitest/coverage-v8':
+      specifier: 4.1.9
+      version: 4.1.9
+    vite-plus:
+      specifier: 0.2.2
+      version: 0.2.2
+
 overrides:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.2
+  vitest: 4.1.9
 
 importers:
 
@@ -31,7 +41,7 @@ importers:
         specifier: ^26.1.0
         version: 26.1.0
       '@vitest/coverage-v8':
-        specifier: 4.1.9
+        specifier: 'catalog:'
         version: 4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9)
       jsdom:
         specifier: ^29.1.1
@@ -43,8 +53,11 @@ importers:
         specifier: npm:@voidzero-dev/vite-plus-core@0.2.2
         version: '@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.0)(typescript@6.0.3)'
       vite-plus:
-        specifier: 0.2.2
+        specifier: 'catalog:'
         version: 0.2.2(@types/node@26.1.0)(@vitest/coverage-v8@4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9))(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.0)(typescript@6.0.3))(jsdom@29.1.1)(typescript@6.0.3)
+      vitest:
+        specifier: 4.1.9
+        version: 4.1.9(@types/node@26.1.0)(@vitest/browser-preview@4.1.9)(@vitest/coverage-v8@4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9))(@voidzero-dev/vite-plus-core@0.2.2(@types/node@26.1.0)(typescript@6.0.3))(jsdom@29.1.1)
       xhr-mock:
         specifier: ^2.5.1
         version: 2.5.1
@@ -72,10 +85,6 @@ packages:
 
   '@babel/helper-string-parser@7.27.1':
     resolution: {integrity: sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/helper-validator-identifier@7.28.5':
-    resolution: {integrity: sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-validator-identifier@7.29.7':
@@ -1263,8 +1272,6 @@ snapshots:
 
   '@babel/helper-string-parser@7.27.1': {}
 
-  '@babel/helper-validator-identifier@7.28.5': {}
-
   '@babel/helper-validator-identifier@7.29.7': {}
 
   '@babel/parser@7.29.3':
@@ -1276,7 +1283,7 @@ snapshots:
   '@babel/types@7.29.0':
     dependencies:
       '@babel/helper-string-parser': 7.27.1
-      '@babel/helper-validator-identifier': 7.28.5
+      '@babel/helper-validator-identifier': 7.29.7
 
   '@bcoe/v8-coverage@1.0.2': {}
 
