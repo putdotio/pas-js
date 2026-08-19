@@ -66,6 +66,7 @@ pas.pageView();
 
 ## Docs
 
+- [Distribution](./docs/DISTRIBUTION.md)
 - [Security](./SECURITY.md)
 
 ## Contributing
