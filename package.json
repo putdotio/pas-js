@@ -1,6 +1,6 @@
 {
   "name": "@putdotio/pas-js",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Browser analytics client for the put.io Analytics System.",
   "keywords": [
     "analytics",
