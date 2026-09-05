@@ -123,4 +123,72 @@ describe("api utility", () => {
     expect(api).toBeTruthy();
     expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, []);
   });
+
+  const postFailedRequest = async (path: string, body: object) => {
+    const persisted = Promise.withResolvers<void>();
+    vi.mocked(mockCache.set).mockImplementationOnce((_key, value) => {
+      persisted.resolve();
+      return value;
+    });
+    api.post(path, body);
+    await persisted.promise;
+  };
+
+  it("keeps the newest 20 failed requests", async () => {
+    xhrMock.post("/api/a", { status: 503 });
+    for (let index = 0; index < 30; index++) await postFailedRequest("/a", { i: index });
+    const queue = vi.mocked(mockCache.set).mock.lastCall?.[1];
+    expect(queue).toEqual(
+      Array.from({ length: 20 }, (_, index) => ({
+        id: mockUUID,
+        path: "/a",
+        body: { i: index + 10 },
+      })),
+    );
+  });
+
+  it("bounds encoded cookie bytes and keeps recent requests after oversized failures", async () => {
+    xhrMock.post(XHR_MOCK_URL, { status: 503 });
+    for (let index = 0; index < 10; index++) {
+      await postFailedRequest(REQUEST_PATH, { index, text: "雪".repeat(100) });
+      const queue = vi.mocked(mockCache.set).mock.lastCall?.[1];
+      expect(encodeURIComponent(JSON.stringify(queue)).length).toBeLessThanOrEqual(3000);
+    }
+    const beforeOversized = vi.mocked(mockCache.set).mock.lastCall?.[1];
+    await postFailedRequest(REQUEST_PATH, { text: "雪".repeat(1000) });
+    expect(vi.mocked(mockCache.set).mock.lastCall?.[1]).toEqual(beforeOversized);
+    await postFailedRequest(REQUEST_PATH, { final: true });
+    const queue = vi.mocked(mockCache.set).mock.lastCall?.[1];
+    expect(queue).toEqual([
+      { id: mockUUID, path: REQUEST_PATH, body: { index: 8, text: "雪".repeat(100) } },
+      { id: mockUUID, path: REQUEST_PATH, body: { index: 9, text: "雪".repeat(100) } },
+      { id: mockUUID, path: REQUEST_PATH, body: { final: true } },
+    ]);
+    expect(encodeURIComponent(JSON.stringify(queue)).length).toBeLessThanOrEqual(3000);
+  });
+
+  it("bounds hydrated requests before replay", async () => {
+    const requested: unknown[] = [];
+    const completed = Promise.withResolvers<void>();
+    xhrMock.post(XHR_MOCK_URL, (request, response) => {
+      requested.push(JSON.parse(request.body()));
+      if (requested.length === 2) completed.resolve();
+      return response.status(200);
+    });
+    vi.mocked(mockCache.get).mockReturnValue([
+      ...Array.from({ length: 30 }, (_, index) => ({
+        id: String(index),
+        path: REQUEST_PATH,
+        body: { index, text: "雪".repeat(100) },
+      })),
+      { id: "oversized", path: REQUEST_PATH, body: { text: "雪".repeat(1000) } },
+    ]);
+    createAPI(BASE_URL, mockCache);
+    await completed.promise;
+    expect(requested).toEqual([
+      { index: 28, text: "雪".repeat(100) },
+      { index: 29, text: "雪".repeat(100) },
+    ]);
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, []);
+  });
 });

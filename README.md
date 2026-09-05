@@ -57,6 +57,10 @@ pas.pageView();
 
 Invalid retry-cookie collections and entries are discarded during initialization.
 Valid queued requests remain eligible for replay.
+The retry cookie retains at most 20 recent requests within 3000 bytes of
+percent-encoded JSON. Requests that cannot fit individually are discarded;
+older requests are dropped when either bound is reached. Retained requests keep
+the existing replay and cookie expiry behavior.
 
 ## API
 

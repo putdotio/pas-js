@@ -27,11 +27,21 @@ const readRetryQueue = (value: unknown): IPutioAnalyticsAPIRetryItem[] => {
   );
 };
 
+const boundRetryQueue = (items: IPutioAnalyticsAPIRetryItem[]) => {
+  // Reserve space for the cookie name and attributes below browser cookie limits.
+  const maxEncodedBytes = 3000;
+  const encodedSize = (queue: IPutioAnalyticsAPIRetryItem[]) =>
+    encodeURIComponent(JSON.stringify(queue)).length;
+  const queue = items.filter((item) => encodedSize([item]) <= maxEncodedBytes).slice(-20);
+  while (encodedSize(queue) > maxEncodedBytes) queue.shift();
+  return queue;
+};
+
 const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
   const CACHE_KEY = "pas_js_retry_queue";
 
   const retryQueue = new BehaviorSubject<IPutioAnalyticsAPIRetryItem[]>(
-    readRetryQueue(cache.get(CACHE_KEY)),
+    boundRetryQueue(readRetryQueue(cache.get(CACHE_KEY))),
   );
 
   retryQueue.getValue().forEach((retryItem) => {
@@ -62,7 +72,7 @@ const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
             body,
           };
 
-          retryQueue.next([...retryQueue.getValue(), retryItem]);
+          retryQueue.next(boundRetryQueue([...retryQueue.getValue(), retryItem]));
         }
       },
     });
