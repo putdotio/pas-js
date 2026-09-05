@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import Cookies from "js-cookie";
 import type { PutioAnalyticsAPI } from "./api";
 import {
   createClientFactory,
@@ -56,6 +57,7 @@ describe("Client", () => {
   });
 
   afterEach(() => {
+    Cookies.remove("pas_js_retry_queue", { domain: ".put.io" });
     vi.clearAllMocks();
     window.history.replaceState({}, "", "/");
   });
@@ -63,6 +65,21 @@ describe("Client", () => {
   it("initializes with default params", () => {
     expect(createClientFactory()()).toBeTruthy();
     expect(createClient()).toBeTruthy();
+  });
+
+  it.each(
+    [
+      {},
+      null,
+      7,
+      "stale",
+      [null, {}, { id: 1, path: "/events", body: {} }, { id: "bad", path: "/events", body: null }],
+    ].map((value) => [value]),
+  )("recovers from malformed retry-cookie state: %j", (value) => {
+    Cookies.set("pas_js_retry_queue", JSON.stringify(value), { domain: ".put.io" });
+    expect(() => createClientFactory()()).not.toThrow();
+    expect(JSON.parse(Cookies.get("pas_js_retry_queue") ?? "null")).toEqual([]);
+    Cookies.remove("pas_js_retry_queue", { domain: ".put.io" });
   });
 
   it("initializes with given params", () => {

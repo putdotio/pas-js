@@ -9,11 +9,29 @@ export interface IPutioAnalyticsAPIRetryItem {
   body: object;
 }
 
+const readRetryQueue = (value: unknown): IPutioAnalyticsAPIRetryItem[] => {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (item: unknown): item is IPutioAnalyticsAPIRetryItem =>
+      typeof item === "object" &&
+      item !== null &&
+      "id" in item &&
+      typeof item.id === "string" &&
+      item.id.length > 0 &&
+      "path" in item &&
+      typeof item.path === "string" &&
+      item.path.length > 0 &&
+      "body" in item &&
+      typeof item.body === "object" &&
+      item.body !== null,
+  );
+};
+
 const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
   const CACHE_KEY = "pas_js_retry_queue";
 
   const retryQueue = new BehaviorSubject<IPutioAnalyticsAPIRetryItem[]>(
-    (cache.get(CACHE_KEY) || []) as IPutioAnalyticsAPIRetryItem[],
+    readRetryQueue(cache.get(CACHE_KEY)),
   );
 
   retryQueue.getValue().forEach((retryItem) => {

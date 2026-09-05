@@ -55,6 +55,9 @@ pas.alias({ id: "42", hash: "signed-user-hash" });
 pas.pageView();
 ```
 
+Invalid retry-cookie collections and entries are discarded during initialization.
+Valid queued requests remain eligible for replay.
+
 ## API
 
 | Method Name  | Parameters                                                   |

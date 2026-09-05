@@ -93,6 +93,21 @@ describe("api utility", () => {
     expect(mockCache.set).not.toHaveBeenCalled();
   });
 
+  it("replays valid cached entries while discarding malformed siblings", async () => {
+    const sent = Promise.withResolvers<void>();
+    const requested = vi.fn();
+    xhrMock.post(XHR_MOCK_URL, (_request, response) => {
+      requested();
+      sent.resolve();
+      return response.status(200);
+    });
+    vi.mocked(mockCache.get).mockReturnValue([null, RETRY_ITEM, { id: "missing-path", body: {} }]);
+    expect(() => createAPI(BASE_URL, mockCache)).not.toThrow();
+    await sent.promise;
+    expect(requested).toHaveBeenCalledTimes(1);
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, []);
+  });
+
   it("retries queued request on boot", () => {
     xhrMock.post(XHR_MOCK_URL, { status: 200 });
 

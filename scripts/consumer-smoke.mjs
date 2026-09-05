@@ -1,9 +1,11 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
 const packageDir = process.cwd();
+const jsdomVersion = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8"))
+  .devDependencies.jsdom;
 const nodeExecutable = process.execPath;
 const npmCliPath = join(
   dirname(nodeExecutable),
@@ -177,6 +179,7 @@ const tests = [
             {
               dependencies: {
                 "@putdotio/pas-js": `file:${tarball}`,
+                jsdom: jsdomVersion,
               },
               name: "pas-js-consumer-runtime",
               private: true,
@@ -191,6 +194,19 @@ const tests = [
           join(tempDir, "runtime.mjs"),
           [
             'import createPasClient from "@putdotio/pas-js";',
+            'import { JSDOM } from "jsdom";',
+            'const dom = new JSDOM("", { url: "https://app.put.io" });',
+            "globalThis.window = dom.window;",
+            "globalThis.document = dom.window.document;",
+            "try {",
+            '  for (const value of [{}, null, 7, "stale", [null, { id: "bad", path: "/events", body: null }]]) {',
+            '    document.cookie = "pas_js_retry_queue=" + encodeURIComponent(JSON.stringify(value)) + "; path=/; domain=.put.io";',
+            "    const client = createPasClient();",
+            '    if (typeof client.track !== "function") throw new Error("Client did not recover");',
+            '    const cookie = document.cookie.split("; ").find((value) => value.startsWith("pas_js_retry_queue="));',
+            '    if (!cookie || JSON.parse(decodeURIComponent(cookie.split("=")[1])).length !== 0) throw new Error("Malformed retry cookie was not replaced");',
+            "  }",
+            "} finally { dom.window.close(); }",
             "",
             'if (typeof createPasClient !== "function") {',
             '  throw new Error("default export is not callable");',

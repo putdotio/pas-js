@@ -29,7 +29,7 @@ Run the packed-consumer smoke when you want release-surface proof beyond unit co
 vp run test:consumer
 ```
 
-That command packs the repo, installs the tarball into a temp project, type-checks the public API, verifies runtime import, and confirms internal package paths stay private.
+That command packs the repo, installs the tarball into a temp project, type-checks the public API, verifies runtime import and malformed retry-cookie recovery in jsdom, and confirms internal package paths stay private.
 
 ## Release Publishing
 
