@@ -9,7 +9,7 @@
 ## Start Here
 
 - [Overview](./README.md)
-- [Contributing](./CONTRIBUTING.md) — setup, `vp run verify`, and the packed-consumer smoke
+- [Contributing](./CONTRIBUTING.md): setup, `vp run verify`, and the packed-consumer smoke
 - [Distribution](./docs/DISTRIBUTION.md)
 - [Security](./SECURITY.md)
 
