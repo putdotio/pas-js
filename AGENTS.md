@@ -9,38 +9,26 @@
 ## Start Here
 
 - [Overview](./README.md)
-- [Contributing](./CONTRIBUTING.md)
+- [Contributing](./CONTRIBUTING.md) — setup, `vp run verify`, and the packed-consumer smoke
 - [Distribution](./docs/DISTRIBUTION.md)
 - [Security](./SECURITY.md)
 
 ## Commands
 
-- `vp install`
-- `vp config`
-- `vp check .`
-- `vp pack`
-- `vp run clean`
-- `vp run test`
-- `vp run coverage`
-- `vp run test:consumer`
-- `vp run verify`
+The `scripts` block in [package.json](./package.json) defines every command. The gate is
+`vp run verify` (unit-only plus package build and coverage); `vp run test:consumer`
+is the publication safety net described in [Contributing](./CONTRIBUTING.md#publication-smoke).
 
 ## Worktrees
 
-`.worktreeinclude` declares which ignored local files managed worktrees carry
-over. It is tracked and lists no files by design; a comment records that no
-ignored local files are needed. In a fresh worktree run `vp install`,
-`vp config`, then `vp run verify`.
+`.worktreeinclude` is tracked and lists no files by design; no ignored local
+files are needed. In a fresh worktree run `vp install`, `vp config`, then
+`vp run verify`.
 
 ## Repo-Specific Guidance
 
 - Keep `README.md` consumer-facing. Put contributor workflow in `CONTRIBUTING.md` and keep `AGENTS.md` as the routing layer.
 - Treat the package entrypoint in `src/index.ts` as the public contract. Add internal-path imports or exports only when the public API intentionally changes.
 - Keep browser-only assumptions explicit. The package is expected to install and import cleanly outside the workspace, while default verification stays fixture-backed.
-- Update docs when install, verify, or release-surface behavior changes.
-
-## Testing
-
-- Default `vp run verify` is unit-only plus package build and coverage.
-- `vp run test:consumer` is the publication safety net. It proves the packed tarball installs, type-checks, imports, and rejects internal package paths from a temp consumer project.
 - Keep live PAS calls out of the default guardrail until the repo has a dedicated low-risk fixture strategy.
+- Update docs when install, verify, or release-surface behavior changes.
