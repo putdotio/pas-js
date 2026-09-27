@@ -65,7 +65,7 @@ const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
 
     request.subscribe({
       error: (error) => {
-        if (error instanceof AjaxError && (error.status > 500 || error.status === 0)) {
+        if (error instanceof AjaxError && (error.status >= 500 || error.status === 0)) {
           const retryItem = {
             id: uuid(),
             path,

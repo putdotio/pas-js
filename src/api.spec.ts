@@ -67,6 +67,13 @@ describe("api utility", () => {
     expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, [RETRY_ITEM]);
   });
 
+  it("writes failed request to retry queue when status code is 500", async () => {
+    xhrMock.post(XHR_MOCK_URL, { status: 500 });
+
+    await waitForRequestError();
+    expect(mockCache.set).toHaveBeenCalledWith(CACHE_KEY, [RETRY_ITEM]);
+  });
+
   it("writes failed requests due to runtime exceptions to retry queue", async () => {
     xhrMock.post(XHR_MOCK_URL, () => Promise.reject(new Error()));
 
