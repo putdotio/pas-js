@@ -1,34 +1,33 @@
 # Agent Guide
 
-## Repo
-
-- Single-package TypeScript repo for `@putdotio/pas-js`
-- Browser analytics client built and packaged with Vite+
-- Main code lives in `src/*`
+`@putdotio/pas-js` is a single-package TypeScript browser analytics client,
+built and packaged with Vite+. Code lives in `src/`.
 
 ## Start Here
 
-- [Overview](./README.md)
-- [Contributing](./CONTRIBUTING.md): setup, `vp run verify`, and the packed-consumer smoke
-- [Distribution](./docs/DISTRIBUTION.md)
+- [Overview](./README.md): consumer usage
+- [Contributing](./CONTRIBUTING.md): setup, validation, and the packed-consumer smoke
+- [Distribution](./docs/DISTRIBUTION.md): npm release
 - [Security](./SECURITY.md)
 
 ## Commands
 
-The `scripts` block in [package.json](./package.json) defines every command. The gate is
-`vp run verify` (unit-only plus package build and coverage); `vp run test:consumer`
-is the publication safety net described in [Contributing](./CONTRIBUTING.md#publication-smoke).
+The `scripts` block in [package.json](./package.json) defines every command.
+`vp run verify` is the gate; `vp run test:consumer` is the
+[publication smoke](./CONTRIBUTING.md#publication-smoke).
 
 ## Worktrees
 
-`.worktreeinclude` is tracked and lists no files by design; no ignored local
-files are needed. In a fresh worktree run `vp install`, `vp config`, then
-`vp run verify`.
+`.worktreeinclude` lists no files; no ignored local files are needed. In a
+fresh worktree run `vp install`, `vp config`, then `vp run verify`.
 
-## Repo-Specific Guidance
+## Rules
 
-- Keep `README.md` consumer-facing. Put contributor workflow in `CONTRIBUTING.md` and keep `AGENTS.md` as the routing layer.
-- Treat the package entrypoint in `src/index.ts` as the public contract. Add internal-path imports or exports only when the public API intentionally changes.
-- Keep browser-only assumptions explicit. The package is expected to install and import cleanly outside the workspace, while default verification stays fixture-backed.
-- Keep live PAS calls out of the default guardrail until the repo has a dedicated low-risk fixture strategy.
-- Update docs when install, verify, or release-surface behavior changes.
+- `src/index.ts` is the public contract. Add internal-path imports or exports
+  only when the public API intentionally changes.
+- The package must install and import cleanly outside the workspace; keep
+  browser-only assumptions explicit.
+- Default verification stays fixture-backed; keep live PAS calls out of it.
+- Keep `README.md` consumer-facing and contributor workflow in
+  `CONTRIBUTING.md`.
+- Update docs when install, verification, or release behavior changes.
