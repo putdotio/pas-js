@@ -13,13 +13,16 @@ built and packaged with Vite+. Code lives in `src/`.
 ## Commands
 
 The `scripts` block in [package.json](./package.json) defines every command.
-`vp run verify` is the gate; `vp run test:consumer` is the
+Vite+ is the pinned `vite-plus` devDependency, so run it through
+`pnpm exec vp`; no global install is needed. `pnpm exec vp run verify` is the
+gate; `pnpm exec vp run test:consumer` is the
 [publication smoke](./CONTRIBUTING.md#publication-smoke).
 
 ## Worktrees
 
 `.worktreeinclude` lists no files; no ignored local files are needed. In a
-fresh worktree run `vp install`, `vp config`, then `vp run verify`.
+fresh worktree run `pnpm install`, `pnpm exec vp config`, then
+`pnpm exec vp run verify`.
 
 ## Rules
 
