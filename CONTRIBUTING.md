@@ -3,16 +3,16 @@
 ## Setup
 
 ```bash
-vp install
-vp config
+pnpm install
+pnpm exec vp config
 ```
 
-`vp config` installs the Git hooks in `.vite-hooks/`.
+`pnpm exec vp config` installs the Git hooks in `.vite-hooks/`.
 
 ## Validation
 
 ```bash
-vp run verify
+pnpm exec vp run verify
 ```
 
 This is the pull request gate and the CI entrypoint: formatting, linting,
@@ -21,7 +21,7 @@ unused-code checks, package build, unit tests, and coverage.
 ## Publication Smoke
 
 ```bash
-vp run test:consumer
+pnpm exec vp run test:consumer
 ```
 
 Packs the package, installs the tarball into a temporary project, type-checks
