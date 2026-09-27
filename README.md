@@ -16,8 +16,6 @@
 
 ## Installation
 
-Install with npm:
-
 ```bash
 npm install @putdotio/pas-js
 ```
@@ -44,7 +42,8 @@ pas.track("transfer_completed", {
 
 ## Browser Tracking
 
-The default client keeps an anonymous identifier in browser cookies and can send identity, event, and page-view payloads to PAS:
+The client keeps an anonymous identifier in a browser cookie and sends
+identity, event, and page-view payloads to PAS:
 
 ```ts
 import createPasClient from "@putdotio/pas-js";
@@ -55,12 +54,11 @@ pas.alias({ id: "42", hash: "signed-user-hash" });
 pas.pageView();
 ```
 
-Invalid retry-cookie collections and entries are discarded during initialization.
-Valid queued requests remain eligible for replay.
-The retry cookie retains at most 20 recent requests within 3000 bytes of
-percent-encoded JSON. Requests that cannot fit individually are discarded;
-older requests are dropped when either bound is reached. Retained requests keep
-the existing replay and cookie expiry behavior.
+Requests queued for retry are stored in a cookie and replayed on the next
+initialization. The queue keeps at most the 20 most recent requests within
+3000 bytes of percent-encoded JSON: a request too large on its own is
+discarded, and the oldest are dropped when either bound is reached. Malformed
+queue entries are discarded on initialization.
 
 ## API
 
@@ -73,12 +71,9 @@ the existing replay and cookie expiry behavior.
 
 ## Docs
 
+- [Contributing](./CONTRIBUTING.md)
 - [Distribution](./docs/DISTRIBUTION.md)
 - [Security](./SECURITY.md)
-
-## Contributing
-
-See [Contributing](./CONTRIBUTING.md)
 
 ## License
 

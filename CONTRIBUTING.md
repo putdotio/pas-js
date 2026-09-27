@@ -1,48 +1,39 @@
 # Contributing
 
-Thanks for contributing to `@putdotio/pas-js`
-
 ## Setup
-
-Install dependencies with Vite+ and wire the stock Git hooks:
 
 ```bash
 vp install
 vp config
 ```
 
-## Validation
+`vp config` installs the Git hooks in `.vite-hooks/`.
 
-Run the repo guardrail before opening or updating a pull request:
+## Validation
 
 ```bash
 vp run verify
 ```
 
-That command runs formatting, linting, package build, unit tests, and coverage using the same entrypoint CI relies on.
+This is the pull request gate and the CI entrypoint: formatting, linting,
+unused-code checks, package build, unit tests, and coverage.
 
 ## Publication Smoke
-
-Run the packed-consumer smoke when you want release-surface proof beyond unit coverage:
 
 ```bash
 vp run test:consumer
 ```
 
-That command packs the repo, installs the tarball into a temp project, type-checks the public API, verifies runtime import and malformed retry-cookie recovery in jsdom, and confirms internal package paths stay private.
+Packs the package, installs the tarball into a temporary project, type-checks
+the public API, checks runtime import and malformed retry-cookie recovery in
+jsdom, and confirms internal package paths stay private. CI runs it on every
+pull request.
 
-## Release Publishing
+## Release
 
-See [Distribution](./docs/DISTRIBUTION.md) for release automation, credentials, and npm publishing.
-
-## Development Notes
-
-- Prefer `vp` for day-to-day commands
-- Put end-user package usage in [Overview](./README.md)
-- Keep contributor workflow changes in this file and security reporting guidance in [Security](./SECURITY.md)
+See [Distribution](./docs/DISTRIBUTION.md).
 
 ## Pull Requests
 
-- Keep changes focused
-- Add or update tests when behavior changes
-- Update docs when package usage, validation, or release behavior changes
+- Add or update tests when behavior changes.
+- Update docs when package usage, validation, or release behavior changes.
