@@ -73,7 +73,7 @@ queue entries are discarded on initialization.
 
 - [Contributing](./CONTRIBUTING.md)
 - [Distribution](./docs/DISTRIBUTION.md)
-- [Security](./SECURITY.md)
+- [Security policy](https://github.com/putdotio/.github/blob/main/SECURITY.md)
 
 ## License
 
