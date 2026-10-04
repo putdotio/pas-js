@@ -1,7 +1,8 @@
 # Agent Guide
 
-`@putdotio/pas-js` is a single-package TypeScript browser analytics client,
-built and packaged with Vite+. Code lives in `src/`.
+`@putdotio/pas-js` is a single-package TypeScript browser analytics client for
+the put.io Analytics System, built and packaged with Vite+. put.io's web app
+and website install it from npm. Code lives in `src/`.
 
 ## Start Here
 
@@ -14,9 +15,7 @@ built and packaged with Vite+. Code lives in `src/`.
 
 The `scripts` block in [package.json](./package.json) defines every command.
 Vite+ is the pinned `vite-plus` devDependency, so run it through
-`pnpm exec vp`; no global install is needed. `pnpm exec vp run verify` is the
-gate; `pnpm exec vp run test:consumer` is the
-[publication smoke](./CONTRIBUTING.md#publication-smoke).
+`pnpm exec vp`; no global install is needed.
 
 ## Worktrees
 
@@ -34,3 +33,20 @@ fresh worktree run `pnpm install`, `pnpm exec vp config`, then
 - Keep `README.md` consumer-facing and contributor workflow in
   `CONTRIBUTING.md`.
 - Update docs when install, verification, or release behavior changes.
+
+## Proof
+
+- Docs only: `pnpm exec vp check .`; no runtime proof.
+- Source change: `pnpm exec vp run verify`.
+- Public API, exports, or packaging: also `pnpm exec vp run test:consumer`,
+  the [publication smoke](./CONTRIBUTING.md#publication-smoke). CI runs it on
+  every pull request.
+
+## Delivery
+
+Pull requests squash-merge to `main`. A push to `main` runs `verify` and
+`test:consumer`, then semantic-release publishes `@putdotio/pas-js` to npm when
+the commits since the last release include `feat`, `fix`, `perf`, a revert,
+or a breaking change; `docs`, `chore`, `test`, and `ci` publish nothing. The
+squashed commit's type is the version decision, and npm never accepts a
+published version number again.
