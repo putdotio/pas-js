@@ -76,13 +76,13 @@ export const createClientFactoryWithDependencies =
       });
     };
 
-    const pageView = () => {
-      const { search, origin, pathname } = window.location;
+    const pageView = ({ path = window.location.pathname }: { path?: string } = {}) => {
+      const { search, origin } = window.location;
       const { utm_source, utm_medium, utm_campaign } = queryString.parse(search);
 
       return track("page_viewed", {
         domain: origin,
-        path: pathname,
+        path,
         referrer: referrerOrigin(document.referrer),
         utm_source,
         utm_medium,

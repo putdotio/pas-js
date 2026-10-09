@@ -56,7 +56,13 @@ pas.pageView();
 
 `pageView` sends the page's origin and path, its `utm_source`, `utm_medium`,
 and `utm_campaign` values, and only the origin of the referrer. Nothing else
-from either URL is sent, so search terms in them stay out of PAS.
+from either URL is sent, so search terms in them stay out of PAS. When the path
+itself carries something PAS must not store, such as a username or an invite
+code, pass the path to send instead:
+
+```ts
+pas.pageView({ path: "/files/user/FILTERED" });
+```
 
 Requests queued for retry are stored in a cookie and replayed on the next
 initialization. The queue keeps at most the 20 most recent requests within
@@ -71,7 +77,7 @@ queue entries are discarded on initialization.
 | **alias**    | `({ id: string/number, hash: string })`                      |
 | **identify** | `({ id: string/number, hash: string, properties?: object })` |
 | **track**    | `(name: string, properties?: object)`                        |
-| **pageView** | -                                                            |
+| **pageView** | `({ path?: string })`                                        |
 
 ## Docs
 

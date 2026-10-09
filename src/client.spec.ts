@@ -159,6 +159,18 @@ describe("Client", () => {
     });
   });
 
+  it("sends the given path instead of the page's for pageView", () => {
+    client.pageView({ path: "/files/user/FILTERED" });
+
+    expect(mockAPI.post).toHaveBeenCalledWith("/events", {
+      events: [
+        expect.objectContaining({
+          properties: expect.objectContaining({ path: "/files/user/FILTERED" }),
+        }),
+      ],
+    });
+  });
+
   it.each([
     ["https://www.google.com/search?q=secret+movie#top", "https://www.google.com"],
     ["https://torrents.example/search/secret-movie/1/", "https://torrents.example"],
