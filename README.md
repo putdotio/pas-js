@@ -54,6 +54,10 @@ pas.alias({ id: "42", hash: "signed-user-hash" });
 pas.pageView();
 ```
 
+`pageView` sends the page's origin and path, its `utm_source`, `utm_medium`,
+and `utm_campaign` values, and only the origin of the referrer. Nothing else
+from either URL is sent, so search terms in them stay out of PAS.
+
 Requests queued for retry are stored in a cookie and replayed on the next
 initialization. The queue keeps at most the 20 most recent requests within
 3000 bytes of percent-encoded JSON: a request too large on its own is

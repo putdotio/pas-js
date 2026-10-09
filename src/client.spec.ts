@@ -159,6 +159,30 @@ describe("Client", () => {
     });
   });
 
+  it.each([
+    ["https://www.google.com/search?q=secret+movie#top", "https://www.google.com"],
+    ["https://torrents.example/search/secret-movie/1/", "https://torrents.example"],
+    ["https://app.put.io/search?phrase=secret%20movie", "https://app.put.io"],
+    ["https://app.put.io/files?search=secret+movie", "https://app.put.io"],
+    [
+      "android-app://com.google.android.googlequicksearchbox/https/www.google.com",
+      "android-app://com.google.android.googlequicksearchbox",
+    ],
+    ["", ""],
+  ])("sends only the referrer origin for pageView: %s", (referrer, expected) => {
+    vi.spyOn(document, "referrer", "get").mockReturnValueOnce(referrer);
+    client.pageView();
+
+    expect(mockAPI.post).toHaveBeenCalledWith("/events", {
+      events: [
+        expect.objectContaining({
+          properties: expect.objectContaining({ referrer: expected }),
+        }),
+      ],
+    });
+    expect(JSON.stringify(vi.mocked(mockAPI.post).mock.calls)).not.toContain("secret");
+  });
+
   it("clears cached user state", () => {
     client.alias({ id: 7, hash: "user_hash" });
     client.clear();
