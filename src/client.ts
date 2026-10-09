@@ -13,6 +13,18 @@ const defaultConfig = {
 
 export type Config = typeof defaultConfig;
 
+// A referrer's path, query, and fragment can carry search terms, so PAS only
+// gets where the visit came from, never which page. `URL#origin` is "null" for
+// app referrers such as android-app://, so build it from protocol and host.
+const referrerOrigin = (referrer: string) => {
+  try {
+    const { host, protocol } = new URL(referrer);
+    return `${protocol}//${host}`;
+  } catch {
+    return "";
+  }
+};
+
 export const createClientFactoryWithDependencies =
   (
     cacheFactory: typeof createCache,
@@ -71,7 +83,7 @@ export const createClientFactoryWithDependencies =
       return track("page_viewed", {
         domain: origin,
         path: pathname,
-        referrer: document.referrer,
+        referrer: referrerOrigin(document.referrer),
         utm_source,
         utm_medium,
         utm_campaign,
