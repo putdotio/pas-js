@@ -27,6 +27,7 @@ const mockCacheFactory = () => {
 };
 
 const mockAPI: PutioAnalyticsAPI = {
+  dispose: vi.fn(),
   post: vi.fn(),
 };
 const mockAPIFactory = vi.fn(() => mockAPI);

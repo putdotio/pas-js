@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { ajax, AjaxError } from "rxjs/ajax";
 import { v4 as uuid } from "uuid";
 import type { PutioAnalyticsCache } from "./cache";
@@ -39,6 +39,7 @@ const boundRetryQueue = (items: IPutioAnalyticsAPIRetryItem[]) => {
 
 const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
   const CACHE_KEY = "pas_js_retry_queue";
+  const requests = new Subscription();
 
   const retryQueue = new BehaviorSubject<IPutioAnalyticsAPIRetryItem[]>(
     boundRetryQueue(readRetryQueue(cache.get(CACHE_KEY))),
@@ -63,7 +64,9 @@ const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
       timeout: 3000,
     });
 
-    request.subscribe({
+    if (requests.closed) return request;
+
+    const inFlight = request.subscribe({
       error: (error) => {
         if (error instanceof AjaxError && (error.status >= 500 || error.status === 0)) {
           const retryItem = {
@@ -76,12 +79,15 @@ const createAPI = (baseURL: string, cache: PutioAnalyticsCache) => {
         }
       },
     });
+    requests.add(inFlight);
 
     return request;
   }
 
   return {
     post,
+    // Unsubscribing aborts requests in flight, so their failures never requeue.
+    dispose: () => requests.unsubscribe(),
   };
 };
 

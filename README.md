@@ -70,6 +70,15 @@ initialization. The queue keeps at most the 20 most recent requests within
 discarded, and the oldest are dropped when either bound is reached. Malformed
 queue entries are discarded on initialization.
 
+When the visitor turns analytics off, dispose the client, then remove its
+`pas_js_user` and `pas_js_retry_queue` cookies. Disposing aborts requests in
+flight, so none reaches the retry queue, and later calls send nothing and write
+no cookies:
+
+```ts
+pas.dispose();
+```
+
 ## API
 
 | Method Name  | Parameters                                                   |
@@ -78,6 +87,7 @@ queue entries are discarded on initialization.
 | **identify** | `({ id: string/number, hash: string, properties?: object })` |
 | **track**    | `(name: string, properties?: object)`                        |
 | **pageView** | `({ path?: string })`                                        |
+| **dispose**  | `()`                                                         |
 
 ## Docs
 

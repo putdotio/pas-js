@@ -92,12 +92,19 @@ export const createClientFactoryWithDependencies =
 
     const clear = () => user.clear();
 
+    const dispose = () => {
+      api.dispose();
+      // A completed subject ignores `next`, so later calls write no user cookie.
+      user.attributes.complete();
+    };
+
     return {
       alias,
       identify,
       track,
       pageView,
       clear,
+      dispose,
     };
   };
 
