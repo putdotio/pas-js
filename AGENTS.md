@@ -8,7 +8,7 @@ and website install it from npm. Code lives in `src/`.
 
 - [Overview](./README.md): consumer usage
 - [Contributing](./CONTRIBUTING.md): setup, validation, and the packed-consumer smoke
-- [Distribution](./docs/DISTRIBUTION.md): npm release
+- [Distribution](./docs/distribution.md): npm release
 - [Security policy](https://github.com/putdotio/.github/blob/main/SECURITY.md)
 
 ## Commands
