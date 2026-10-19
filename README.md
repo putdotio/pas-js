@@ -46,10 +46,6 @@ The client keeps an anonymous identifier in a browser cookie and sends
 identity, event, and page-view payloads to PAS:
 
 ```ts
-import createPasClient from "@putdotio/pas-js";
-
-const pas = createPasClient();
-
 pas.alias({ id: "42", hash: "signed-user-hash" });
 pas.pageView();
 ```
@@ -85,13 +81,13 @@ Cookies.remove("pas_js_retry_queue", { domain: ".put.io" });
 
 ## API
 
-| Method Name  | Parameters                                                   |
-| :----------- | :----------------------------------------------------------- |
-| **alias**    | `({ id: string/number, hash: string })`                      |
-| **identify** | `({ id: string/number, hash: string, properties?: object })` |
-| **track**    | `(name: string, properties?: object)`                        |
-| **pageView** | `({ path?: string })`                                        |
-| **dispose**  | `()`                                                         |
+| Method Name  | Parameters                                                  |
+| :----------- | :---------------------------------------------------------- |
+| **alias**    | `({ id: string/number, hash: string })`                     |
+| **identify** | `({ id: string/number, hash: string, properties: object })` |
+| **track**    | `(name: string, properties?: object)`                       |
+| **pageView** | `({ path?: string })`                                       |
+| **dispose**  | `()`                                                        |
 
 ## Docs
 
@@ -101,4 +97,4 @@ Cookies.remove("pas_js_retry_queue", { domain: ".put.io" });
 
 ## License
 
-This project is available under the [MIT License](./LICENSE)
+This project is available under the [MIT License](./LICENSE).
