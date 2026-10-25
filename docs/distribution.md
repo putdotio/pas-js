@@ -1,31 +1,23 @@
 # Distribution
 
-Every merge to `main` should be releasable. The `release` job in
-[ci.yml](../.github/workflows/ci.yml) runs after `vp run verify` and
-`vp run test:consumer` pass on a `main` push, and publishes to npm with
-semantic-release. [`.releaserc.json`](../.releaserc.json) decides whether a
-commit releases and how the version bumps.
+A push to `main` publishes `@putdotio/pas-js` to npm through the `release` job
+in [ci.yml](../.github/workflows/ci.yml), after `verify` and `test:consumer`
+pass. The job calls the shared
+[`frontend-release-npm.yml`](https://github.com/putdotio/.github#frontend-release-npmyml)
+workflow, pinned to a reviewed commit SHA.
 
-The job calls `frontend-release-npm.yml` from the shared
-[putdotio/.github workflows](https://github.com/putdotio/.github#frontend-release-npmyml),
-pinned to a reviewed commit SHA; that workflow owns the semantic-release setup.
-The `verify` job ends with the shared
-[links](https://github.com/putdotio/.github#actionslinks) and
-[scan](https://github.com/putdotio/.github#actionsscan) actions. GitHub secret
-scanning and push protection cover secrets in this public repository.
+semantic-release reads [`.releaserc.json`](../.releaserc.json): `feat`, `fix`,
+`perf`, reverts, and breaking changes publish; `docs`, `chore`, `test`, and
+`ci` publish nothing.
 
 ## Release Environment
 
-The protected GitHub Environment `release` holds:
-
-- secret `PUTIO_CI_APP_PRIVATE_KEY`
-- variable `PUTIO_CI_APP_CLIENT_ID`
-
-It has no approval step; releases are continuous once the `main` gate passes.
-The `putio-ci` GitHub App writes the version-sync commit, `v*` tag, and
-GitHub Release.
+The protected GitHub Environment `release` supplies the secret
+`PUTIO_CI_APP_PRIVATE_KEY` and the variable `PUTIO_CI_APP_CLIENT_ID`. It has
+no approval step. The `putio-ci` GitHub App writes the version commit, the
+`v*` tag, and the GitHub Release.
 
 npm publishes through Trusted Publishing with provenance. The trusted
-publisher on npm is owner `putdotio`, repository `pas-js`, workflow `ci.yml`,
+publisher is owner `putdotio`, repository `pas-js`, workflow `ci.yml`,
 Environment `release`. Renaming `ci.yml` breaks publishing until npm is
 updated.

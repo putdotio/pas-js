@@ -87,6 +87,7 @@ Cookies.remove("pas_js_retry_queue", { domain: ".put.io" });
 | **identify** | `({ id: string/number, hash: string, properties: object })` |
 | **track**    | `(name: string, properties?: object)`                       |
 | **pageView** | `({ path?: string })`                                       |
+| **clear**    | `()`, resets to a new anonymous identity                    |
 | **dispose**  | `()`                                                        |
 
 ## Docs
