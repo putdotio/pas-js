@@ -12,7 +12,7 @@ System (PAS). put.io's web app and website install it from npm. Code lives in
 [package.json](./package.json) `scripts` defines every command. Run Vite+
 through the pinned devDependency: `pnpm exec vp`.
 
-A fresh worktree needs no ignored local files:
+Setup and gate:
 
 ```bash
 pnpm install
@@ -38,12 +38,10 @@ pnpm exec vp run verify
 
 ## Delivery
 
-Pull requests squash-merge to `main`; the `release` job in
-[ci.yml](./.github/workflows/ci.yml) publishes `@putdotio/pas-js` to npm when
-[`.releaserc.json`](./.releaserc.json) says the commits release.
+Pull requests squash-merge to `main`. The squashed commit's type decides
+whether [ci.yml](./.github/workflows/ci.yml) publishes to npm, and npm never
+accepts a published version number again.
 
-- The squashed commit's type decides the version, and npm never accepts a
-  published version number again.
 - npm Trusted Publishing names workflow `ci.yml` and Environment `release`.
   Renaming either breaks publishing until a maintainer updates the npm
   package settings.
