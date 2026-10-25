@@ -60,11 +60,9 @@ code, pass the path to send instead:
 pas.pageView({ path: "/files/user/FILTERED" });
 ```
 
-Requests queued for retry are stored in a cookie and replayed on the next
-initialization. The queue keeps at most the 20 most recent requests within
-3000 bytes of percent-encoded JSON: a request too large on its own is
-discarded, and the oldest are dropped when either bound is reached. Malformed
-queue entries are discarded on initialization.
+Requests that fail with a server or network error are stored in a cookie and
+replayed on the next initialization. `pas.clear()` starts a new anonymous
+identity.
 
 When the visitor turns analytics off, dispose the client, then remove its
 `pas_js_user` and `pas_js_retry_queue` cookies from the configured cache domain
@@ -78,17 +76,6 @@ pas.dispose();
 Cookies.remove("pas_js_user", { domain: ".put.io" });
 Cookies.remove("pas_js_retry_queue", { domain: ".put.io" });
 ```
-
-## API
-
-| Method Name  | Parameters                                                  |
-| :----------- | :---------------------------------------------------------- |
-| **alias**    | `({ id: string/number, hash: string })`                     |
-| **identify** | `({ id: string/number, hash: string, properties: object })` |
-| **track**    | `(name: string, properties?: object)`                       |
-| **pageView** | `({ path?: string })`                                       |
-| **clear**    | `()`, resets to a new anonymous identity                    |
-| **dispose**  | `()`                                                        |
 
 ## Docs
 
